@@ -1,0 +1,40 @@
+<html>
+	<script src="changeStyle.js"></script>
+	<STYLE TYPE="text/css">
+
+
+		#layer1 {position: absolute; left: 280; top: 100; width:200; height:100;
+      			background-color:magenta
+		}
+		
+		#layer2 {position: absolute; left: 20; top: 100; width:200; height:100;
+      background-color:cyan
+		}
+	#layer3 {position: absolute; left: 50; top: 300; width:400; height:400;
+      background-color:yellow
+		}
+</STYLE>
+  <head>
+  <body>
+    <div ID="layer1">
+      <h2> Layer 1</h2>
+      Layer 1: on right
+    </div>
+    <div ID="layer2">
+      <h2> Layer 2</h2>
+      Layer 1: on left
+    </div>
+	
+	<div ID="layer3">
+      <h1> Control panel</h1>
+      <p>Move layers around</p>
+	<input name="lay[]" value="layer1" id="1ay1"  type="radio" /> Layer1
+    <input name="lay[]" value="layer2" id="lay2"  type="radio" /> Layer2
+    <input name="lay[]" value="layer3" id="lay3"  type="radio" /> Layer3 
+	  <a href="javascript:moveUDByName(-20)"> up</a>
+	  <a href="javascript:moveUDByName(20)"> down</a>
+	  <a href="javascript:moveLRByName(20)"> left</a>
+      <a href="javascript:moveLRByName(-20)"> right</a><br>
+    </div>
+  </body>
+</html>

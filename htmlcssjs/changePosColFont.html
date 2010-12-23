@@ -1,0 +1,87 @@
+<html lang="en">
+<HEAD>
+<TITLE>Example</TITLE>
+<STYLE TYPE="text/css">
+
+body {font: 14px arial;
+	     color: #000066;
+}
+
+#myText {position: absolute;
+	top: 100px;
+	left: 400px;
+	font: 24px arial;
+	font-weight: 900;
+}
+</STYLE>
+
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">
+
+var texttop = 100;
+var textleft = 400;
+
+function vanish(flag) {
+	var myObj = new getObj('myText');
+	myObj.style.visibility = (flag) ? 'hidden' : 'visible'
+}
+
+function moveUpDown(amount) {
+	var myObj = new getObj('myText');
+	texttop += amount;
+	myObj.style.top = texttop;
+}
+
+function moveLR(amount) {
+	var myObj = new getObj('myText');
+	textleft += amount;
+	myObj.style.left = textleft;
+}
+
+
+function changeColor(color) {
+	var myObj = new getObj('myText');
+	myObj.style.color = color;
+}
+
+function changeStyle(style) {
+	var myObj = new getObj('myText');
+	myObj.style.fontStyle = style;
+}
+
+function getObj(name) {
+	if (document.getElementById) {
+		this.obj = document.getElementById(name);
+		this.style = document.getElementById(name).style;
+	}
+	else
+		return;
+}
+
+</SCRIPT>
+</HEAD>
+
+<BODY>
+
+<DIV ID="myText">Change Me!</DIV>
+
+<p>
+
+<A CLASS="page" HREF="javascript:moveUpDown(40);">Down</A><BR>
+<A CLASS="page" HREF="javascript:moveUpDown(-40);">Up</A><BR>
+<A CLASS="page" HREF="javascript:moveLR(-40);">Left</A><BR>
+<A CLASS="page" HREF="javascript:moveLR(+40);">Right</A><BR>
+<p>
+<A CLASS="page" HREF="javascript:changeColor('orange')">Orange</A><BR>
+<A CLASS="page" HREF="javascript:changeColor('green')">Green</A><BR>
+<A CLASS="page" HREF="javascript:changeColor('purple')">Purple</A><BR>
+<P>
+<a CLASS="page" HREF="javascript:changeStyle('italic')" class="nohover">Italic</a><br>
+
+<a CLASS="page" HREF="javascript:changeStyle('normal')" class="nohover">Normal</a><br>
+<p>
+<A CLASS="page" HREF="javascript:vanish(1)">Vanish!</A><BR>
+<A CLASS="page" HREF="javascript:vanish(0)">Re-appear</A><BR>
+<p>
+
+</BODY>
+</HTML>
