@@ -1,0 +1,86 @@
+body {
+  color: #555;
+  font-family: Trebuchet, "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+  font-size: 85%;
+  margin: 0;
+  padding: 0;
+}
+
+#hd, #ft {
+  padding: 3em .5em 0;
+}
+#ft {
+  text-align: center;
+}
+#bd {
+  width: 850px;
+  padding: .5em 0 0 1em;
+}
+#bd .section h1 {
+  margin: 0;
+  line-height: 2em;
+}
+#bd .section p {
+  margin: 0;
+  padding-bottom: 1em;
+  line-height: 1.5em;
+}
+
+#wd-form {
+  margin-bottom: 2em;
+}
+
+/**
+ * Accessibility sugar
+ * http://css-discuss.incutio.com/?page=ScreenreaderVisibility
+ */
+.wd-skiplink {
+  position: absolute;
+  left: -999px;
+  width: 990px;
+}
+
+/* Designed for 800x600 */
+.g-doc-800 {
+  width: 57.69em;
+  *width: 56.3em;
+  min-width: 750px;  /* min-width doesn't work in IE6 */
+  margin: 0 auto;
+  text-align: left;
+}
+/* For agents that support the pseudo-element selector syntax */
+.g-section:after { 
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.g-unit .g-section:after {
+  clear: none;
+}
+.g-unit .g-section {
+  width: 100%;
+  overflow: hidden;
+}
+/* Forces hasLayout for IE. This fixes the usual gamut of peekaboo bugs. */
+.g-section,
+.g-unit {
+  zoom: 1;
+}
+
+/* g-tpl-220 g-unit */
+.g-tpl-220 .g-unit {
+  display: block;
+  margin: 0 0 0 220px;
+  width: auto;
+  float: none;
+}
+
+/* g-tpl-220 g-first */
+.g-tpl-220 .g-first {
+  display: block;
+  margin: 0;
+  width: 220px;
+  float: left;
+}

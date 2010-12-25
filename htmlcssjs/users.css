@@ -1,0 +1,19 @@
+#wd-users table {
+  border-collapse: collapse; /* Equivalent for cellspacing=0 */
+  
+}
+#wd-users thead tr {
+  background: #eee;
+  border: 1px solid #bbb;
+  border-bottom: 1px solid #ccc;
+}
+#wd-users tbody tr {
+  background: #f9f9f9;
+  border-bottom: 1px solid #ccc;
+}
+#wd-users th,
+#wd-users td {
+  padding: 5px 25px 5px 5px;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}

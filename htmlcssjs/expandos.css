@@ -1,0 +1,33 @@
+.wd-expando {
+  border: 1px solid #e9e9e9;
+  margin: 0 0 2em 0;
+  width: 200px;
+}
+.wd-expando h2 {
+  border-bottom: 1px solid #e9e9e9;
+  font-size: .9em;
+  background: #f9f9f9;
+  padding: 3px;
+  margin: 0;
+}
+.wd-expando ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.wd-expando li {
+  padding: 3px;
+  margin: 0 0 0 .5em;
+}
+.wd-expando-on h2,
+.wd-expando-off h2 {
+  cursor: pointer;
+  padding-left: 18px;
+  background: #f9f9f9 url(minus.png) no-repeat left center;
+}
+.wd-expando-off ol {
+  display: none;
+}
+.wd-expando-off h2 {
+  background-image: url(plus.png);
+}

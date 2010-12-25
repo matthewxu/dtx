@@ -1,0 +1,57 @@
+/** 
+ * This rule will make the navbar go to the top left corner of the viewport,
+ * even if it's not the first item in the source order of the markup. 
+ */
+#wd-navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 2px solid #ccc;
+  background: #f9f9f9;
+}
+/* Reset default unordered list display style to remove bulleting/spacing */
+#wd-navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: .3em;
+}
+/* Stack LI elements horizontally instead of the default vertical orientation */
+#wd-navbar li {
+  float: left;
+  margin-right: 5px;
+}
+/* Turns the links into larger clickable boxes */
+#wd-navbar li a {
+  display: block;
+  background-color: #f9f9f9;
+  border: 1px solid #f9f9f9;
+  padding: .5em;
+}
+/* Pseudo selector used for a usability aid, so you know when you can click */
+#wd-navbar li a:hover {
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+}
+/* Hides nested hierarchy links by default */
+#wd-navbar li ul {
+  display: none;
+  position: absolute;
+  padding: 0;
+}
+/* Shows nested hierarchy links when we mouseover the parent */
+#wd-navbar li:hover ul {
+  display: block; 
+}
+/* Overrides the style on line 23 for nested link collections */
+#wd-navbar li li {
+  float: none;
+  border-bottom: 1px solid #ccc; /* border-top causes IE bug */
+}
+/* Different styling for nested hierarchy links. */
+#wd-navbar li li a {
+  border: 0;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
