@@ -1,0 +1,58 @@
+/* TODO: Needs to be merged into ps.css and ps-pp.css when this is fully launched */
+
+#body-center {
+  max-width: 1165px;
+  margin: 0 auto;
+}
+
+#srp-logo {
+  width: 178px;
+  height: 62px;
+  margin: 7px 13px 15px 6px;
+}
+
+#srp-logo img {
+  top: -145px;
+}
+
+#srp-header #search-input {
+  margin-top: 20px;
+}
+
+.search_advanced {
+  padding-top: 4px;
+}
+
+#result-count {
+  margin-top: -29px;
+  left: auto;
+  margin-left: 205px;
+}
+
+.srch_box {
+  font-size: 131%;
+  padding: 6px 10px 2px 6px;
+  border-left: 1px solid #999;
+}
+
+#lhs-ref {
+  margin-left: 10px;
+  width: 165px;
+}
+
+.lhs {
+  margin-left: 188px;
+}
+
+#lhs-ref .lhs-group {
+  margin-left: 25px;
+}
+
+#ads-top, #ads-bot, #ads-prices {
+  padding: 8px;
+}
+
+#ads-top li, #ads-bot li, #ads-prices li {
+  padding-top: 14px;
+}
+

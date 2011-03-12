@@ -1,0 +1,619 @@
+/* TODO: Needs to be merged into ps.css and ps-pp.css */
+
+/* New style for Skunkworks - General text
+--------------------------------------------------------*/
+
+body {
+  line-height: 131%;
+}
+
+a {
+  color: #11c;
+}
+
+/* faint text */
+.f, .f:link,
+#ads-rhs .spon_txt, #ads-top .spon_txt, #ads-bot .spon_txt,
+#ads-prices .spon_txt, .result-attributes, .seller-location,
+.ad-offers-on-srp .spon_txt {
+  color: #777;
+}
+
+/* faint link */
+.fl, #footer a, #sample_q a, .bottom-links a {
+  text-decoration: none;
+}
+
+.fl:visited {
+  color: #4272db;
+}
+
+.fl:active {
+  color: #c11;
+}
+
+.fl:link, #footer a, .bottom-links a {
+  color: #4272db;
+}
+
+#gbar a.gb1, #gbar a.gb2, #gbar a.gb3, #gbar a.gb4 {
+  color:#11c !important;
+}
+
+#gbar a.gb2:hover{color:#fff !important}
+
+.a, .a:link,
+#ads-top cite, #ads-rhs cite, #ads-bot cite, #ads-prices cite,
+.result cite, .result-seller-rating a {
+  color: #282;
+}
+
+.fl:hover, .search_advanced a:hover, .n a:hover span, #lhs-ref a:hover, #footer a:hover,
+#sample_q a:hover, .bottom-links a:hover {
+  text-decoration: underline;
+}
+
+.result-cont h3 a:visited, #ads-top a:visited, #ads-bot a:visited, .ps-guide a:visited  {
+  color: #551a8b;
+}
+
+/* SPRITES
+--------------------------------------------------------*/
+
+.mode-icon,
+#srp-header #srchButton,
+#srchButtonB,
+#hp-cont #srchButton,
+#pp-header #srchButton,
+.n div,
+#breadcrumbs-reset,
+.ps-sprite-son,
+.ps-sprite-shalf,
+.ps-sprite-soff,
+.ps-sprite-plusbox-plus,
+.ps-sprite-plusbox-minus,
+.ps-cb-img {
+  background-image: url(http://www.google.com/images/srpr/nav_logo13.png);
+}
+
+a .ps-sprite {
+  cursor: pointer;
+}
+
+.ps-sprite-son {
+  background-position: 0 -110px;
+}
+
+.ps-sprite-shalf {
+  background-position: -117px -107px;
+}
+
+.ps-sprite-soff {
+  background-position: 0 -120px;
+}
+
+.ps-sprite-plusbox-plus,
+.ps-sprite-plusbox-minus {
+  height: 13px;
+  width: 13px;
+  position: relative;
+  top: 3px;
+}
+
+.ps-sprite-plusbox-plus {
+  background-position: -153px -70px;
+}
+
+.ps-sprite-plusbox-minus {
+  background-position: -153px -84px;
+}
+
+.ps-cb-img {
+  background-position: 0 -91px;
+}
+
+.ps-sprite-mon,
+.ps-sprite-mhalf,
+.ps-sprite-moff,
+.ps-sprite-sghalf,
+.ps-sprite-sgon,
+.ps-sprite-cart,
+.ps-sprite-sortup,
+.ps-sprite-sortdw {
+  background-image: url(/products/images/ps3.png);
+}
+
+.ps-sprite-mon {
+  background-position: -1px -1px;
+}
+
+.ps-sprite-mhalf {
+  background-position: -22px -1px;
+}
+
+.ps-sprite-moff {
+  background-position: -43px -1px;
+}
+
+.ps-sprite-sghalf {
+  background-position: -64px -11px;
+}
+
+.ps-sprite-sgon {
+  background-position: -64px -1px;
+}
+
+.ps-sprite-cart {
+  background-position: -74px -1px;
+  position: relative;
+  top: 1px;
+}
+
+#pp-cont .ps-sprite-cart {
+  top: 3px;
+}
+
+.ps-sprite-sortup {
+  background-position: -100px -10px;
+  background-color: #000;
+}
+
+.ps-sprite-sortdw {
+  background-position: -100px -2px;
+  background-color: #000;
+}
+
+/* HEADER
+--------------------------------------------------------*/
+
+#srp-logo {
+  width: 137px;
+  height: 49px;
+  margin: 15px 19px 21px 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+#srp-logo img {
+  top: -41px;
+  position: absolute;
+  left: 0;
+}
+
+#srp-header #search-input {
+  margin-top: 21px;
+}
+
+#srp-header .srchBoxCont, #pp-header .srchBoxCont {
+  padding: 0;
+
+}
+
+.srchBoxCont {
+  border-bottom: 1px solid #999;
+}
+
+.srch_box {
+  font-family: Arial, sans-serif;
+  font-size: 139%;
+  padding: 4px 10px 4px 6px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  width: 550px;
+  height: 22px;
+  float: left;
+}
+
+.srchButtonRightShadow {
+  border-right: 1px solid #E7E7E7;
+  height: 32px;
+  position: relative;
+}
+
+.srchButtonBorder {
+  background: #eee;  
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+  height: 30px;
+}
+
+#srp-header #srchButton, #hp-cont #srchButton, #pp-header #srchButton, #srchButtonB {
+  border: 0;
+  background-position: center bottom;
+  font-size: 116%;
+  font-family: Arial, sans-serif;
+  height: 30px;
+}
+
+.search_advanced {
+  font-size: 85%;
+  text-align: right;
+  padding-top: 3px;
+  padding-left: 0;
+  width: auto;
+}
+
+.search_advanced a {
+  color: #4272db;
+  text-decoration: none;
+}
+
+#result-count {
+  position: absolute;
+  margin-top: -29px;
+  left: 176px;
+  font-size: 85%;
+}
+
+#search-input, #footer table {
+  border-collapse: separate;
+}
+
+/* SRP
+--------------------------------------------------------*/
+
+.lhs {
+  margin-left: 151px;
+}
+
+.content-cont {
+  border-left: 1px solid #d3e1f9;
+  padding-left: 8px;
+}
+
+.below-content {
+  padding-left: 9px;
+}
+
+/* BREADCRUMBS
+--------------------------------------------------------*/
+
+#breadcrumbs {
+  padding: 8px;
+  background: #EBEFF9;
+  margin-bottom: 8px;
+}
+
+#breadcrumbs-reset {
+  background-position: -138px -84px;
+  float: right;
+  height: 14px;
+  width: 14px;
+}
+
+/* ADS
+--------------------------------------------------------*/
+
+#ads-top .spon_txt, #ads-bot .spon_txt, #ads-prices .spon_txt {
+  font-size: 85%;
+}
+
+#ads-top, #ads-bot, #ads-prices {
+  padding: 6px 8px;
+}
+
+#ads-top, #ads-bot, #ads-prices, .ad-offers-on-srp {
+  background: #fff8e7;
+}
+
+#ads-top h3, #ads-bot h3, #ads-prices h3 {
+  padding-bottom: 1px;
+}
+
+
+
+/* LIST VIEW
+--------------------------------------------------------*/
+
+.list .result-title {
+  padding-bottom: 2px;
+}
+
+.list .result-price .main-price,
+.list .result-price .result-price-range {
+  font-size: 139%;
+}
+
+.nearby-count {
+  padding: 0;
+}
+
+.list #results {
+  margin: 0 0 22px;
+}
+
+/* REFINEMENTS
+--------------------------------------------------------*/
+
+#ms {
+  font-size: 116%;
+  padding: 3px 0 16px 0;
+  border-bottom: 1px solid #c9d7f1;
+  margin: 0 0 16px -8px;
+}
+
+#ms li {
+  line-height: 24px;
+  padding: 0 0 2px 8px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+}
+
+#lhs-ref #ms li {
+  padding-top: 0;
+}
+
+#ms .mode-icon {
+  float: left;
+  height: 19px;
+  margin-right: 5px;
+  margin-top: 2px;
+  outline: none;
+  width: 19px;
+}
+
+#ms .mode-desc {
+  padding-left: 1px;
+}
+
+#ms .current-mode {
+  background: #36f;
+  border-top: 1px solid #03c;
+  border-bottom: 1px solid #03c;
+  color: white;
+  margin-top: -1px;
+}
+
+#ms span {
+  display: inline-block;
+}
+
+#lhs-ref {
+  padding: 0 4px 0 4px;
+  width: 143px;
+  border: 0;
+}
+
+#lhs-ref a {
+  text-decoration: none;
+}
+
+#lhs-ref .rsaquo {
+  visibility: hidden;
+}
+
+#lhs-ref {
+  line-height: 120%;
+}
+
+#lhs-ref .lhs-group {
+  margin-bottom: 16px;
+}
+
+#lhs-ref li,
+#lhs-ref .more-ref-link {
+  padding-top: 3px;
+}
+
+#ref-category .ref-cat-indent {
+  padding-left: 8px;
+}
+
+#ms li .mode-icon {
+  background-position: -20px -132px;
+}
+
+#ms .current-mode .mode-icon {
+  background-position: -140px -152px;
+  margin-top: 4px;
+}
+
+/* BOTTOM REFINEMENTS
+--------------------------------------------------------*/
+
+#query_suggestions p {
+  font-size: 124%;
+  padding-bottom: 6px;
+}
+
+.tool-header {
+  background: none;
+  border: 0;
+  font-size: 124%;
+  font-weight: normal;
+  padding: 4px 6px;
+}
+
+#query_suggestions td {
+  padding: 0 32px 4px 0;
+}
+
+#query_suggestions {
+  margin: 0 0 19px;
+}
+
+#buying_guides, #visual_tools {
+  margin: 0 0 30px;
+}
+
+.v-ref-hdr {
+  margin-bottom: 10px;
+}
+
+#ads-bot {
+  margin-bottom: 36px;
+}
+
+/* Pagination
+--------------------------------------------------------*/
+
+#ps-navbar {
+  padding: 0 0 22px 70px;
+}
+
+.n div {
+  height: 40px;
+}
+
+#nf {
+  background-position: -24px 0;
+  width: 28px;
+}
+
+#nc {
+  background-position: -53px 0;
+  width: 20px;
+}
+
+.n .nr {
+  background-position: -74px 0;
+  width: 20px;
+}
+
+#nn {
+  margin-right: 70px;
+  width: 71px;
+}
+
+#nn, #nl {
+  background-position: -96px 0;
+}
+
+#np {
+  width: 53px;
+}
+
+#nl {
+  width: 47px;
+}
+
+.n a, .n a:visited {
+  color: #4272db;
+  text-decoration: none;
+}
+
+.n .i {
+  color: #000;
+  text-decoration: none;
+}
+
+.n .b, .n .b:visited {
+  color: #11c;
+  text-decoration: underline;
+}
+
+.n .navbar-prev {
+  margin-right: 35px;
+}
+
+/* FOOTER
+--------------------------------------------------------*/
+
+#footer {
+  padding: 0;
+  text-align: left;
+}
+
+#footer-bg {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+#footer-bg .srchBoxCont {
+  padding-right: 18px;
+  width: 100%;
+}
+
+#footer-bg .srch_box {
+  width: 100%;
+}
+
+.footer-links {
+  text-align: center;
+  padding-top: 6px;
+}
+
+.bottom-links {
+  text-align: center;
+  padding: 22px 0;
+}
+
+.disclaimer {
+  padding-bottom: 22px;
+  text-align: center;
+  font-size: 85%;
+  color: #777;
+  width: 100%;
+}
+
+.bottom-links a, .footer-links a {
+  margin: 0 10px;
+}
+
+.copyright {
+  font-size: 85%;
+  color: #777;
+}
+
+/* HOMEPAGE
+--------------------------------------------------------*/
+
+.samp_q_line td {
+  border-bottom: 1px solid #C9D7F1;
+}
+
+#hp-tagline {
+  margin: 8px 0 24px 0;
+}
+
+/* SUGGEST
+--------------------------------------------------------*/
+
+body .google-ac-m {
+  font-size: 16px;
+  line-height: 22px;
+  border: 1px solid #a2bff0;
+  color: black;
+}
+
+#completeTable .google-ac-b td {
+  background: #d5e2ff;
+  color: black;
+}
+
+#completeTable .google-ac-c {
+  padding-left: 5px;
+}
+
+/* PRODUCT PAGE
+--------------------------------------------------------*/
+
+#pp-logo {
+  margin: 5px 8px 0 0;
+}
+
+.ps-sellers-table {
+  line-height: normal;
+}
+
+#pp-header .srch_box {
+  width: 420px;
+}
+
+/* KOREA
+--------------------------------------------------------*/
+
+.fl,
+#footer a,
+#sample_q a,
+.bottom-links a,
+.n span,
+#lhs-ref a,
+.search_advanced a {
+  border: 0;
+  text-decoration: none;
+}
