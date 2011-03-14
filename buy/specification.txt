@@ -40,7 +40,18 @@
 		广告	
 
 数据库表
-	Brand,channel,category,product,productimage,productprice,productSKUs,productcategory,(Merchant),Manufacturer,comment,searchkeyword,user,		
+	Brand,
+	Channel,
+	XCategory,
+	XProduct,
+	XProductimage,
+	XMerchantBidProduct,
+	XproductSKUs,
+	XProductcategory,
+	Merchant,
+	ProductReview,
+	User(Step 2),
+	searchkeyword,		
 	
 	表结构
 user
@@ -208,7 +219,6 @@ productcategory
 	
 	
 comment
-		
 	
 	Field               Type              Collation        Null    Key     Default              Extra                        Privileges  Comment                     
 	------------------  ----------------  ---------------  ------  ------  -------------------  ---------------------------  ----------  ----------------------------
@@ -244,7 +254,7 @@ comment
 ★	LastChangeDate      timestamp         (NULL)           YES             (NULL)               on update CURRENT_TIMESTAMP  select      log the last update datetime
 
 Manufacturer
-		
+	(Step 2)			
 	Field                 Type                          Collation        Null    Key     Default            Extra                        Privileges  Comment
 	--------------------  ----------------------------  ---------------  ------  ------  -----------------  ---------------------------  ----------  -------
 ★	Manufacturer_         int(11) unsigned              (NULL)           NO      PRI     0                                               select             
@@ -261,7 +271,6 @@ Manufacturer
 ★	ManufacturerSEOText   varchar(255)                  utf8_general_ci  NO                                                              select             
 ★	LastChangeDate        timestamp                     (NULL)           NO              CURRENT_TIMESTAMP  on update CURRENT_TIMESTAMP  select             
 merchant	
-(Step 2)	
 	Field                      Type                                                      Collation        Null    Key     Default              Extra                        Privileges  Comment                                                                                                                                                   
 	-------------------------  --------------------------------------------------------  ---------------  ------  ------  -------------------  ---------------------------  ----------  ----------------------------------------------------------------------------------------------------------------------------------------------------------
 	MerchantID                 int(11) unsigned                                          (NULL)           NO      PRI     0                                                 select                                                                                                                                                                
@@ -306,8 +315,9 @@ merchant
 
 searchkeyword
 ★	ID
+★	UserID
 ★	Keyword
 ★	CategoryID	
-★	AddDate	
+★	AddDate
 	
 		
