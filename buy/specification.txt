@@ -40,7 +40,7 @@
 		广告	
 
 数据库表
-	user,channel,category,product,productcategory,Brand,(Merchant),Manufacturer,comment,searchkeyword		
+	Brand,channel,category,product,productimage,productprice,productSKUs,productcategory,(Merchant),Manufacturer,comment,searchkeyword,user,		
 	
 	表结构
 user
