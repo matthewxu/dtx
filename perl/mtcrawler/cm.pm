@@ -90,6 +90,44 @@ sub digmapping{
 }
 
 
+
+sub digmappingv2{
+#mapping for content to save
+	my($self,$url,$file,@others)=@_;
+	my $mp=$cf->getmpcf()->{'mp'};
+	my $content=();
+	foreach my $regx (keys %$mp){
+	#loop url regx
+		if($url=~/$regx/){
+			#xpath instants
+			my $xpaths=$mp->{$regx}->{xpath};
+			my $xp = XML::XPath->new(filename => $file);
+			foreach my $xpath (keys %$xpaths){
+				#get the first node list
+				my $nodeset = $xp->find($xpath);
+				foreach my $node ($nodeset->get_nodelist) {
+						
+					my $xpathlist=$xpaths->{$xpath};
+					foreach $data(@xpathlist){
+						foreach my $x(keys %$data){
+							my $ntype=$data->{$x};		
+							my ($name,$type)=split ':',$ntype;
+											
+						} 
+					}
+				}
+#				$content->{$name}=\@data;
+			}
+
+		}
+	}
+	print Dumper $content;
+
+	return $content;	
+}
+
+
+
 sub saveDoneUrl{
 	my($self,$url,$key,@others)=@_;
         my $urltofile="$cf->getfilecf()->{'urltofile'}.$self->{batchid}";

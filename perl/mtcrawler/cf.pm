@@ -30,4 +30,19 @@ sub getmpcf{
         }
 	return $self;
 }
+sub getmpcfV2{
+	my($self,%args)=@_;        
+	$self->{config}=$args->{'config'} || $self->{base}.'/config.mt';
+        if($self->{config}){
+                my $fh=new FileHandle();
+                $fh->open($self->{config}) || die "open $self->{config} failed";
+                while(my $l=<$fh>){
+                        my($regx,$xpath)=split '\t', $l;
+         				my $xpathhash = from_json( $xpath, { utf8  => 1 } );               
+						$self->{mp}->{$regx}->{xpath}=$xpathhash;
+                }
+                close $fh;
+        }
+	return $self;
+}
 1;
