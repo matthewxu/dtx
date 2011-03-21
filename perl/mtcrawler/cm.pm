@@ -94,25 +94,50 @@ sub digmapping{
 sub digmappingv2{
 #mapping for content to save
 	my($self,$url,$file,@others)=@_;
-	my $mp=$cf->getmpcf()->{'mp'};
+	my $mp=$cf->getmpcfV2()->{'mpv2'};
 	my $content=();
 	foreach my $regx (keys %$mp){
 	#loop url regx
 		if($url=~/$regx/){
 			#xpath instants
-			my $xpaths=$mp->{$regx}->{xpath};
 			my $xp = XML::XPath->new(filename => $file);
+			#get root xpath
+			my $xpaths=$mp->{$regx}->{xpath};	
 			foreach my $xpath (keys %$xpaths){
 				#get the first node list
 				my $nodeset = $xp->find($xpath);
 				foreach my $node ($nodeset->get_nodelist) {
-						
+					#get 2 level xpath list
 					my $xpathlist=$xpaths->{$xpath};
+					my $nodestring= XML::XPath::XMLParser::as_string($node);
+					my $xp2=XML::XPath->new($nodestring);
 					foreach $data(@xpathlist){
-						foreach my $x(keys %$data){
-							my $ntype=$data->{$x};		
+						foreach my $xpath2(keys %$data){
+							my $ntype=$data->{$xpath2};	
 							my ($name,$type)=split ':',$ntype;
-											
+							my $nodeset2 = $xp->find($xpath);	
+							foreach my $node2 ($nodeset2->get_nodelist) {
+								my $nodevalue=$node->getValue;
+								if($type eq 'img'){
+								#download and save path			
+				
+								}elsif($type eq 'text'){
+								#save text
+									
+								}elsif($type eq 'nurl'){
+								#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
+														
+								}elsif($type eq 'aurl'){
+								#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
+									                                
+				                }elsif($type eq 'mtext'){
+				               	#how to handle array content 
+								#eg.	one product ,many imgs,many merchants
+				                                
+				                }elsif($type eq 'texturl'){
+				                                
+				                }											
+							}
 						} 
 					}
 				}
@@ -127,6 +152,10 @@ sub digmappingv2{
 }
 
 
+#sub typeHandle{
+#my ($self,$name,$type)=@_;	
+#
+#}
 
 sub saveDoneUrl{
 	my($self,$url,$key,@others)=@_;

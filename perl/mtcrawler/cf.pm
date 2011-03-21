@@ -4,7 +4,7 @@ package cf;
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
-	$self->{base}='/home/mxu/data';
+		$self->{base}='/home/mxu/data';
 return $self;
 }
 sub getfilecf{
@@ -39,7 +39,7 @@ sub getmpcfV2{
                 while(my $l=<$fh>){
                         my($regx,$xpath)=split '\t', $l;
          				my $xpathhash = from_json( $xpath, { utf8  => 1 } );               
-						$self->{mp}->{$regx}->{xpath}=$xpathhash;
+						$self->{mpv2}->{$regx}->{xpath}=$xpathhash;
                 }
                 close $fh;
         }
