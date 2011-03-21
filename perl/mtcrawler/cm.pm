@@ -89,20 +89,28 @@ sub digmapping{
 	return $content;	
 }
 
-
+#############################################################################
+#content data meta
+#content->{site}->{channelcat}->{@datadetal}
+#							datadetail
+#							  	{name}=""
+#								{price}=""
+#								{img}=""
+#								{desc}=""
+#############################################################################
 
 sub digmappingv2{
 #mapping for content to save
-	my($self,$url,$file,@others)=@_;
+	my($self,$url,$file,$content,@others)=@_;
 	my $mp=$cf->getmpcfV2()->{'mpv2'};
-	my $content=();
 	foreach my $regx (keys %$mp){
 	#loop url regx
 		if($url=~/$regx/){
 			#xpath instants
 			my $xp = XML::XPath->new(filename => $file);
 			#get root xpath
-			my $xpaths=$mp->{$regx}->{xpath};	
+			my $xpaths=$mp->{$regx}->{xpath};
+			my $pagetype=$mp->{$regx}->{pagetype};		
 			foreach my $xpath (keys %$xpaths){
 				#get the first node list
 				my $nodeset = $xp->find($xpath);
@@ -119,20 +127,22 @@ sub digmappingv2{
 							foreach my $node2 ($nodeset2->get_nodelist) {
 								my $nodevalue=$node->getValue;
 								if($type eq 'img'){
-								#download and save path			
-				
+									#download and save path			
+														
 								}elsif($type eq 'text'){
-								#save text
+									#save text
 									
+								}elsif($type eq 'durl'){
+									#detail url
+														
 								}elsif($type eq 'nurl'){
-								#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
+									#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
 														
 								}elsif($type eq 'aurl'){
-								#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
+									#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
 									                                
-				                }elsif($type eq 'mtext'){
-				               	#how to handle array content 
-								#eg.	one product ,many imgs,many merchants
+				                }elsif($type eq 'attach'){
+					               	#how to attachments 
 				                                
 				                }elsif($type eq 'texturl'){
 				                                

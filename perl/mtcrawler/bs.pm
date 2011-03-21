@@ -52,6 +52,27 @@ sub new{
 return $self;
 }
 
+sub download{
+	my($self,$url)=@_;
+	unless($url){
+		return '<no>no url</no>';	
+	}
+	my $request = HTTP::Request->new('GET', $url);
+	my $urlmd5=md5_hex($url);		
+	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};	
+	my $crawlerdatafoldtmp=$cf->getfilecf()->{'crawlerdatatmp'};	
+	my  $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
+	$realname=$response->filename || "$urlmd5.jpg";
+	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");
+	# 	my $response = $ua->request($request, \&saveCallBack, 4096);
+
+return 1;	
+}
+#sub saveCallBack{
+#	my($data, $response, $protocol) = @_;
+#	
+#}
+
 sub getReString{
 
 	my($self,$url)=@_;
@@ -94,7 +115,6 @@ sub savecontent{
 	}
 	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};
 	my $urlmd5=md5_hex($url);			
-	$fo->check_path("$crawlerdatafold/$urlmd5",1);
 #	if(system("echo '$content' > $crawlerdatafold/$urlmd5")){
 #		die "echo  > $crawlerdatafold/$urlmd5 fail \n";
 #	}
