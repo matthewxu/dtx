@@ -18,6 +18,12 @@ sub new{
 	return $self
 }
 
+sub setbrowse{
+	my($self,$b,@others)=@_;
+	$self->{bs}=$b;
+	return 1;
+}
+
 sub urlcheck{
 #mapping for crawling or  abandon
 	my($self,$url,@others)=@_;
@@ -52,7 +58,7 @@ sub digmapping{
 				my @data=();	
 				if($type eq 'img'){
 				#download and save path			
-
+					$self->{bs}->
 				}elsif($type eq 'text'){
 				#save text
 					my $xp = XML::XPath->new(filename => $file);

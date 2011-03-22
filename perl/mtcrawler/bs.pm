@@ -61,12 +61,12 @@ sub download{
 	my $urlmd5=md5_hex($url);		
 	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};	
 	my $crawlerdatafoldtmp=$cf->getfilecf()->{'crawlerdatatmp'};	
-	my  $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
-	$realname=$response->filename || "$urlmd5";
+	my $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
+	my $realname=$response->filename || "$urlmd5";
 	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");
 	# 	my $response = $ua->request($request, \&saveCallBack, 4096);
 
-return 1;	
+return "$crawlerdatafold/$realname";	
 }
 
 #sub saveCallBack{
@@ -120,19 +120,40 @@ sub savecontent{
 #		die "echo  > $crawlerdatafold/$urlmd5 fail \n";
 #	}
 	$fo->appendStringToFile("$crawlerdatafold/$urlmd5",$content,1);
-return 1;
+return "$crawlerdatafold/$urlmd5";
 
 }
 
 sub seturl{
 	my($self,$url)=@_;
-	$self->{url}=$url;
+	$url=~s/^http:\/\//i;
+	if($url=~/\//){
+		if($url=~/(.*)\//i){
+			$self->{host}=$1;
+		}else{
+			$self->{host}=$url;
+		}
+	}
+	$self->{url}="http://".$url;
 return 1;
 }
 sub geturl{
-
 my($self)=@_;
-return $self->{url};
+	return $self->{url};
 
+}
+
+sub fixurl
+{
+	my($self,$url)=@_;
+	if($url=~/^http:\/\//i){
+		return $url;
+	}
+	
+	if( $url=~/^www\./i){
+		return "http:://".$url;
+	}else{
+		return "http:://".$self->{host}.$url;
+	}
 }
 1;
