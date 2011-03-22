@@ -62,12 +62,13 @@ sub download{
 	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};	
 	my $crawlerdatafoldtmp=$cf->getfilecf()->{'crawlerdatatmp'};	
 	my  $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
-	$realname=$response->filename || "$urlmd5.jpg";
+	$realname=$response->filename || "$urlmd5";
 	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");
 	# 	my $response = $ua->request($request, \&saveCallBack, 4096);
 
 return 1;	
 }
+
 #sub saveCallBack{
 #	my($data, $response, $protocol) = @_;
 #	
