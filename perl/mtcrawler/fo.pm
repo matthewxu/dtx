@@ -15,7 +15,8 @@ use Carp;
 use File::Copy;
 use Sys::Hostname;
 use Time::HiRes qw(gettimeofday);
-use File::NFSLock;
+#use File::NFSLock;
+use File::SharedNFSLock;
 use Encode qw/encode decode from_to/; 
 use HTML::Entities qw/encode_entities decode_entities encode_entities_numeric/;
 $|++;
@@ -387,11 +388,13 @@ sub lockfile {
 	$expiretime = 60 if(!$expiretime);
 	$maxwaittime = 300 if(!$maxwaittime);
 	
-	my $lock = File::NFSLock->new({
+	my $lock = File::SharedNFSLock->new({
 		file               => $fullfilename,
-	    lock_type          => $locktype, #'BLOCKING|EXCLUSIVE|NONBLOCKING|SHARED
-		blocking_timeout   => $expiretime,
-	    stale_lock_timeout => $maxwaittime,
+#	    lock_type          => $locktype, #'BLOCKING|EXCLUSIVE|NONBLOCKING|SHARED
+#		blocking_timeout   => $expiretime,
+#	    stale_lock_timeout => $maxwaittime,
+		timeout_acquire		=> $maxwaittime,
+		timeout_stale		=> $expiretime,
 	  });
 	
 	$self->{'lockedfile'}{$fullfilename} = $lock;

@@ -11,13 +11,14 @@ use LWP::Simple ;
 
 
   my $ua = LWP::UserAgent->new;
-my $request = HTTP::Request->new('GET', 'http://files.smarter.com.cn/images/new20/logo.gif?62');
+my $request = HTTP::Request->new('GET', 'http://www.smarter.com.cn');
+#my $request = HTTP::Request->new('GET', 'http://files.smarter.com.cn/images/new20/logo.gif?62');
 #my  $response = $ua->request($request, '1.png'); 
 #print $response->filename ."\n";
-#my $r=$request->uri;
-#print $r->path."\n";
-#print $r->host."\n";
-#print $r->path_query."\n";
+my $r=$request->uri;
+print $r->path."\n";
+print $r->host."\n";
+print $r->path_query."\n";
 
 #print local_address
 #$response = $ua->request($request);
@@ -29,10 +30,10 @@ my $request = HTTP::Request->new('GET', 'http://files.smarter.com.cn/images/new2
   sub callback {
         my ($data,$resp,$size) = @_;
         my $message=$resp->message(  );
-        print Dumper $message;
+#        print Dumper $message;
         my $field=   $resp->headers();
-        print Dumper $field;
-         my $filename=   $resp->filename();
+#        print Dumper $field;
+         my $filename=$resp->filename() || "index.html";
          print $filename."\n";
 }
 

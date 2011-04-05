@@ -126,9 +126,9 @@ return "$crawlerdatafold/$urlmd5";
 
 sub seturl{
 	my($self,$url)=@_;
-	$url=~s/^http:\/\//i;
+	$url=~s/^http:\/\///i;
 	if($url=~/\//){
-		if($url=~/(.*)\//i){
+		if($url=~/(.*?)\//i){
 			$self->{host}=$1;
 		}else{
 			$self->{host}=$url;
@@ -151,9 +151,9 @@ sub fixurl
 	}
 	
 	if( $url=~/^www\./i){
-		return "http:://".$url;
+		return "http://".$url;
 	}else{
-		return "http:://".$self->{host}.$url;
+		return "http://".$self->{host}.$url;
 	}
 }
 1;

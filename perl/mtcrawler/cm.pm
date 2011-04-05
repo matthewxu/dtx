@@ -58,7 +58,7 @@ sub digmapping{
 				my @data=();	
 				if($type eq 'img'){
 				#download and save path			
-					$self->{bs}->
+#					$self->{bs}->
 				}elsif($type eq 'text'){
 				#save text
 					my $xp = XML::XPath->new(filename => $file);
@@ -134,7 +134,7 @@ sub digmappingv2{
 								my $nodevalue=$node->getValue;
 								if($type eq 'img'){
 									#download and save path			
-														
+									my $imgurl=$self->{'bs'}->fixurl($nodevalue);					
 								}elsif($type eq 'text'){
 									#save text
 									
