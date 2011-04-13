@@ -5,7 +5,8 @@ my $fo=new fo();
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
-		$self->{base}='/home/mxu/data';
+		$self->{base}=$args->{'base'} || '/home/mxu/data';
+		$self->{config}=$args->{'config'} || $self->{base}.'/config.mt';
 return $self;
 }
 sub getfilecf{
@@ -20,9 +21,8 @@ sub getfilecf{
 }
 
 sub getmpcf{
-	my($self,%args)=@_;        
-	$self->{config}=$args->{'config'} || $self->{base}.'/config.mt';
-        if($self->{config}){
+	my($self)=@_;        
+    if($self->{config}){
                 my $fh=new FileHandle();
                 $fh->open($self->{config}) || die "open $self->{config} failed";
                 while(my $l=<$fh>){
@@ -36,9 +36,8 @@ sub getmpcf{
 	return $self;
 }
 sub getmpcfV2{
-	my($self,%args)=@_;        
-	$self->{config}=$args->{'config'} || $self->{base}.'/config.mt';
-        if($self->{config}){
+	my($self)=@_;        
+    if($self->{config}){
                 my $fh=new FileHandle();
                 $fh->open($self->{config}) || die "open $self->{config} failed";
                 while(my $l=<$fh>){

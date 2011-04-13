@@ -89,6 +89,10 @@ sub getReString{
 return $string; 
 }
 
+sub getCachedFile{
+		my($self,$url)=@_;
+		return $self->savecontent($url,$self->getReXMLString($url));
+}
 sub getReXMLString{
 
 	my($self,$url)=@_;
