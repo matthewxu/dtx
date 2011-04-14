@@ -1,5 +1,6 @@
 package cf;
 #config
+use JSON qw/to_json from_json/;
 use fo;
 my $fo=new fo();
 sub new{

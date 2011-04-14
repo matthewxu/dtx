@@ -180,7 +180,7 @@ sub digmappingv2{
 					foreach $data(@$xpathlist){
 						foreach my $xpath2(keys %$data){
 							my $ntype=$data->{$xpath2};	
-							my ($name,$type)=split ':',$ntype;
+							my ($name,$type)=split '=',$ntype;
 							my $nodeset2 = $xp2->find($xpath2);	
 							my $nodelist=$nodeset2->get_nodelist();
 							foreach my $node2 (@$nodelist) {
