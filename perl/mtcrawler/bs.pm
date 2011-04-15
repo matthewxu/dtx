@@ -24,12 +24,13 @@ use Digest::MD5 qw(md5 md5_hex md5_base64);
 my $cookiefile='cookiefile';
 
 my $ua = LWP::UserAgent->new;
-my $cf=new cf();
+
 my $fo=new fo();
 sub new{
 	my ($class, %args) = @_;
 	my $self  = bless {}, $class;	
-	
+	my $cf=new cf(%args);
+	$self->{cf}=$cf;
 	my $cookies = new HTTP::Cookies(file=>$cookiefile,autosave=>1,);
 	my $lwpconncache = $ua->conn_cache(LWP::ConnCache->new());
 	$ua->conn_cache->total_capacity(undef);
@@ -59,8 +60,11 @@ sub download{
 	}
 	my $request = HTTP::Request->new('GET', $url);
 	my $urlmd5=md5_hex($url);		
-	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};	
-	my $crawlerdatafoldtmp=$cf->getfilecf()->{'crawlerdatatmp'};	
+	my $crawlerdatafold=$self->{cf}->{'crawlerdata'};	
+	my $crawlerdatafoldtmp=$self->{cf}->{'crawlerdatatmp'};
+	
+	print 	$crawlerdatafold."\n";
+	print 	$crawlerdatafoldtmp."\n";
 	my $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
 	my $realname=$response->filename || "$urlmd5";
 	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");
@@ -91,6 +95,9 @@ return $string;
 
 sub getCachedFile{
 		my($self,$url)=@_;
+		my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
+		my $urlmd5=md5_hex($url);			
+		return "$crawlerdatafold/$urlmd5" if(-e "$crawlerdatafold/$urlmd5");
 		return $self->savecontent($url,$self->getReXMLString($url));
 }
 sub getReXMLString{
@@ -118,7 +125,7 @@ sub savecontent{
 	unless($self->{url}){
 		return '<no>no url</no>';
 	}
-	my $crawlerdatafold=$cf->getfilecf()->{'crawlerdata'};
+	my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
 	my $urlmd5=md5_hex($url);			
 #	if(system("echo '$content' > $crawlerdatafold/$urlmd5")){
 #		die "echo  > $crawlerdatafold/$urlmd5 fail \n";

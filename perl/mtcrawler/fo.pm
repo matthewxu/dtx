@@ -169,7 +169,7 @@ sub appendfile{
 sub appendStringToFile
 {
 	my ($self,$to,$str,$overwrite,$nolock,$encode,@args) = @_;
-	print "echo string >> $to...";
+	print "echo string >> $to...\n";
 	$self->lockfile($to,'LOCK_EX',300,600) if(!$nolock);
 	my $errmsg='';
 	unless($encode){
@@ -374,7 +374,7 @@ sub pathinfo
 ##		
 sub lockfile {
 	my ($self,$fullfilename,$locktype,$expiretime,$maxwaittime,@args)=@_;
-	
+	print "locking file $fullfilename..........\n";	
 	$locktype = 'BLOCKING' if(!$locktype);
 	if($locktype eq 'LOCK_SH' || $locktype eq 'SHARED' || $locktype eq 'SH')
 	{
@@ -388,14 +388,14 @@ sub lockfile {
 	$expiretime = 60 if(!$expiretime);
 	$maxwaittime = 300 if(!$maxwaittime);
 	
-	my $lock = File::SharedNFSLock->new({
-		file               => $fullfilename,
+	my $lock = File::SharedNFSLock->new(
+		file				=> 			'c:/1.txt',#'$fullfilename',
 #	    lock_type          => $locktype, #'BLOCKING|EXCLUSIVE|NONBLOCKING|SHARED
 #		blocking_timeout   => $expiretime,
 #	    stale_lock_timeout => $maxwaittime,
 		timeout_acquire		=> $maxwaittime,
 		timeout_stale		=> $expiretime,
-	  });
+	  );
 	
 	$self->{'lockedfile'}{$fullfilename} = $lock;
 	return $lock;

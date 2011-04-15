@@ -2,24 +2,27 @@ package cf;
 #config
 use JSON qw/to_json from_json/;
 use fo;
+use Data::Dumper;
+use rg;
 my $fo=new fo();
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
-		$self->{base}=$args->{'base'} || '/home/mxu/data';
-		$self->{config}=$args->{'config'} || $self->{base}.'/config.mt';
-return $self;
+		$self->{base}=$args{'base'} || '/home/mxu/data';
+		$self->{config}=$self->{base}."/".$args{'config'} || $self->{base}.'/config.mt';
+		$self->{urltofile}=$self->{base}.'/urltofile.mt';	
+		$self->{crawlerdata}=$self->{base}.'/crawlerdata';
+		$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';
+		$fo->check_path($self->{urltofile},1);
+		$fo->check_path($self->{crawlerdata}."/",1);
+		$fo->check_path($self->{crawlerdatatmp}."/",1);
+		return $self;
 }
-sub getfilecf{
-	my($self,@others)=@_;
-	$self->{urltofile}=$self->{base}.'/urltofile.mt';	
-	$self->{crawlerdata}=$self->{base}.'/crawlerdata';
-	$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';
-	$fo->check_path($self->{urltofile},1);
-	$fo->check_path($self->{crawlerdata},1);
-	$fo->check_path($self->{crawlerdatatmp},1);
-	return $self;
-}
+#sub getfilecf{
+#	my($self,@others)=@_;
+#
+#	return $self;
+#}
 
 sub getmpcf{
 	my($self)=@_;        
@@ -43,6 +46,8 @@ sub getmpcfV2{
                 $fh->open($self->{config}) || die "open $self->{config} failed";
                 while(my $l=<$fh>){
                         my($regx,$xpath,$pagetype)=split '\t', $l;
+                        $regx=rg->specialtag($regx);
+                        print "$regx\n"; 
          				my $xpathhash = from_json( $xpath, { utf8  => 1 } );               
 						$self->{mpv2}->{$regx}->{xpath}=$xpathhash;
 						$self->{mpv2}->{$regx}->{pagetype}=$pagetype;

@@ -8,37 +8,48 @@ use Bloom::Filter;
 use XML::XPath;
 use XML::XPath::XMLParser;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
+use Data::Dumper;
 use cf;
 use bs;
 my $COUNT=10000000;
 my $bfilter = Bloom::Filter->new( error_rate => 0.0000001, capacity => $COUNT );
 my $cf;
-
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
+        $self->{base}=$args{'base'};
+        $self->{config}=$args{'config'};
+        print "cm init....\n";
 		$cf=new cf(%args);
 	return $self
 }
 
+sub getnewbrowser{
+	my($self,@others)=@_;
+	my $args={'base'=>"$self->{base}",'config'=>"$self->{config}"};
+
+	print Dumper \$args; 
+	my $b=new bs(%$args);
+	return $b;	
+}
 sub setbrowser{
 	my($self,$b,@others)=@_;
 	unless($b){
-		$b=new bs();
+		$b=$self->getnewbrowser();
 	}
 	$self->{bs}=$b;
 	return 1;
 }
 sub getbrowser{
 	my($self,$flag,@others)=@_;
-	if($flag){
-		my $b=new bs();
+	unless($flag){
+		my $b=$self->getnewbrowser();
 		return $b;
 	}
 	if(defined $self->{bs}){
 		return $self->{bs};
 	}else{
-		my $b=new bs();
+		my $b=$self->getnewbrowser();
 		return $b;
 	}
 }
@@ -144,7 +155,9 @@ sub digmappingv2{
 	my @datalist=();
 	foreach my $regx (keys %$mp){
 	#loop url regx
+		print "$regx,$url: \n";
 		if($url=~/$regx/){
+			print "match \n"; 
 			#xpath instants
 			my $xp = XML::XPath->new(filename => $file);
 			#get root xpath
@@ -153,18 +166,10 @@ sub digmappingv2{
 			
 			my $pagetype=$mp->{$regx}->{pagetype};
 
-#			if($pagetype eq 'cc' || $pagetype eq 'channelcat'){
-#				$content->{$urlmd5}->{url}=$url;
-#			}
-#			if($pagetype eq 'list'){
-#				
-#			}
-#			if($pagetype eq 'detail'){
-#				
-#			}
 			#data list in one page
 			##############First XPath json iterator##############
 			foreach my $xpath (keys %$xpaths){
+				print "first xpath $xpath\n";
 				#get the first node list
 				my $nodeset = $xp->find($xpath);
 				#store one piece of onething data inhash		
@@ -173,32 +178,38 @@ sub digmappingv2{
 					#get 2 level xpath list
 					my $xpathlist=$xpaths->{$xpath};
 					my $nodestring= XML::XPath::XMLParser::as_string($node);
+					print "subNode: $nodestring\n";
 					my $xp2=XML::XPath->new($nodestring);
+#					print Dumper $xp2;
+#					die;
 					my %datahash=();
 										
 					############seconde XPath json iterator##get same level content##################
 					foreach $data(@$xpathlist){
+						
 						foreach my $xpath2(keys %$data){
+
 							my $ntype=$data->{$xpath2};	
 							my ($name,$type)=split '=',$ntype;
+							print "xpath: $xpath2\n";
 							my $nodeset2 = $xp2->find($xpath2);	
-							my $nodelist=$nodeset2->get_nodelist();
-							foreach my $node2 (@$nodelist) {
-								my $nodevalue=$node->getValue;
+							foreach my $node2 ($nodeset2->get_nodelist) {
+								my $nodevalue=$node2->getValue;
+								print "$name\t$nodevalue\t$type\n";
 								if($type eq 'img'){
 									#download and save path			
 									my $imgurl=$self->{'bs'}->fixurl($nodevalue);
 									my $localpath=$self->getbrowser()->download($imgurl);
-									$datahash->{$name}=$localpath;														
+									$datahash{$name}=$localpath;														
 								}elsif($type eq 'text'){
 									#save text
-									$datahash->{$name}=$nodevalue;
+									$datahash{$name}=$nodevalue;
 								}elsif($type eq 'durl'){
 									#detail url, this mean we are in list page.
 									#todo callback or call another digmappings
 									#need to do it right now or later in same piece of data
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
-									$datahash->{durl}=$fixedurl;					
+									$datahash{durl}=$fixedurl;					
 								}elsif($type eq 'nurl'){
 									#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
 									# this mean we are in same page.
@@ -208,14 +219,14 @@ sub digmappingv2{
 								}elsif($type eq 'aurl'){
 									#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
-									$datahash->{aurl}=$fixedurl;								                                
+									$datahash{aurl}=$fixedurl;								                                
 #				                }elsif($type eq 'attach'){
 #					               	#how to attachments 
 #				                                
 #				                }elsif($type eq 'texturl'){
 #				                            
 				                }else{
-				                	$datahash->{$name}=$nodevalue;
+				                	$datahash{$name}=$nodevalue;
 				                }	
 				                #in my case,it should be just one data.
 				                last;										
@@ -223,13 +234,16 @@ sub digmappingv2{
 						} 
 					}
 					#################################
+					print Dumper \%datahash;
 					push @datalist, \%datahash;
 				}
 			}
 			
+		}else{
+			print "not match \n";
 		}
 	}
-	
+	print Dumper @datalist;
 	##### deal with need-to-be-handle url in datalist;
 	my $urlmd5=md5_hex($url);
 	$content->{url}=$url;	

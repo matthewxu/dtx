@@ -31,9 +31,15 @@ my $string='http://www.smarter.com.cn/computers-553/category/stdcomponent-554/';
 #print $string;
 use Data::Dumper;
 use rg;
-my $st='[[^[[http://www.kkk.com{}/[[.*[[index.html';
+my $st='[[^[[http://www.kkk.com{}/[[.*[[index.html[[$[[ [[';
 my $ssst=rg->specialtag($st);
-print  $ssst;
+print  $ssst.":\n";
+
+
+my @s=split /\[\[/,$st;
+my $k=pop @s;
+print ":".$k.":\n";
+ 
 #
 #my %sss=split /\[\[/,$st;
 #
