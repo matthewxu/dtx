@@ -45,12 +45,13 @@ sub getmpcfV2{
                 my $fh=new FileHandle();
                 $fh->open($self->{config}) || die "open $self->{config} failed";
                 while(my $l=<$fh>){
-                        my($regx,$xpath,$pagetype)=split '\t', $l;
+                        my($regx,$xpath,$pagetype,$index)=split '\t', $l;
                         $regx=rg->specialtag($regx);
                         print "$regx\n"; 
          				my $xpathhash = from_json( $xpath, { utf8  => 1 } );               
 						$self->{mpv2}->{$regx}->{xpath}=$xpathhash;
 						$self->{mpv2}->{$regx}->{pagetype}=$pagetype;
+						$self->{mpv2}->{$regx}->{'index'}=$index;
                 }
                 close $fh;
         }

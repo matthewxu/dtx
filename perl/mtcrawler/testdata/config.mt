@@ -1,2 +1,2 @@
-[[^[[http://www.xungou.com/[[$[[ [[	{"//div/h4/a":[{"//a/text()":"cc"},{"//a/attribute::href":"ccurl=aurl"}]}	cc
-[[^[[http://www.xungou.com/channel_[[.*[[/[[$[[ [[	{"/html/body/div/div/div/div/div/div/ul/li/div[1]/a":[{"//a/text()":"cc"},{"//a/attribute::href":"listurl=nurl"}]}	cc
+[[^[[http://www.xungou.com/[[$[[ [[	{"//div/h4/a":[{"//a/text()":"cc"},{"//a/attribute::href":"ccurl=surl"}]}	cc	1
+[[^[[http://www.xungou.com/channel_[[.*[[/[[$[[ [[	{"/html/body/div/div/div/div/div/div/ul/li/div/h3/a":[{"//a/text()":"cc"},{"//a/attribute::href":"listurl=nurl=3"}]}	surl	2

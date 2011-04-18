@@ -143,7 +143,7 @@ sub digmapping{
 
 sub digmappingv2{
 	#mapping for content to save
-	my($self,$url,$file,$mycontent,@others)=@_;
+	my($self,$url,$regxindex,$mycontent,$file,@others)=@_;
 	unless($file){
 		my $b=$self->getbrowser();
 		$b->seturl($url);
@@ -156,8 +156,9 @@ sub digmappingv2{
 	foreach my $regx (keys %$mp){
 	#loop url regx
 		print "$regx,$url: \n";
-		if($url=~/$regx/){
-			print "match \n"; 
+		if(($url=~/$regx/ &&(!$regxindex)) || ($regxindex && $regxindex eq $mp->{$regx}->{'index'} ) ) {
+			my $pagetype=$mp->{$regx}->{pagetype};
+			print "match $pagetype\n"; 
 			#xpath instants
 			my $xp = XML::XPath->new(filename => $file);
 			#get root xpath
@@ -190,7 +191,7 @@ sub digmappingv2{
 						foreach my $xpath2(keys %$data){
 
 							my $ntype=$data->{$xpath2};	
-							my ($name,$type)=split '=',$ntype;
+							my ($name,$type,$regxindex)=split '=',$ntype;
 							print "xpath: $xpath2\n";
 							my $nodeset2 = $xp2->find($xpath2);	
 							foreach my $node2 ($nodeset2->get_nodelist) {
@@ -204,22 +205,40 @@ sub digmappingv2{
 								}elsif($type eq 'text'){
 									#save text
 									$datahash{$name}=$nodevalue;
+								}elsif($type eq 'surl'){
+									#sub cc url
+									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
+									$datahash{surl}=$fixedurl;
+									$datahash{regxindex}=$regxindex;
+									print "surl: $fixedurl\n";
 								}elsif($type eq 'durl'){
 									#detail url, this mean we are in list page.
 									#todo callback or call another digmappings
 									#need to do it right now or later in same piece of data
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
-									$datahash{durl}=$fixedurl;					
-								}elsif($type eq 'nurl'){
+									$datahash{durl}=$fixedurl;
+									$datahash{regxindex}=$regxindex;					
+								}elsif($type eq 'lurl'){
+									#list page url
+									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
+#									push @tocrawlerurl,$fixedurl;#crawler it later
+									$datahash{lurl}=$fixedurl;	
+									$datahash{regxindex}=$regxindex;
+								}
+								elsif($type eq 'nurl'){
 									#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
 									# this mean we are in same page.
 									#todo callback or call another digmappings
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
-									push @tocrawlerurl,$fixedurl;#crawler it later
+									my %tmpurls=();
+									$tmpurls{'nurl'}=$fixedurl;
+									$tmpurls{'regxindex'}=$regxindex;
+									push @tocrawlerurl,%tmpurls;#crawler it later
 								}elsif($type eq 'aurl'){
 									#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
-									$datahash{aurl}=$fixedurl;								                                
+									$datahash{aurl}=$fixedurl;	
+									$datahash{regxindex}=$regxindex;							                                
 #				                }elsif($type eq 'attach'){
 #					               	#how to attachments 
 #				                                
@@ -234,7 +253,7 @@ sub digmappingv2{
 						} 
 					}
 					#################################
-					print Dumper \%datahash;
+#					print Dumper \%datahash;
 					push @datalist, \%datahash;
 				}
 			}
@@ -243,28 +262,95 @@ sub digmappingv2{
 			print "not match \n";
 		}
 	}
-	print Dumper @datalist;
+#	print "start datalist--------------------\n";
+#	print Dumper @datalist;
+#	print "end datalist--------------------\n";
 	##### deal with need-to-be-handle url in datalist;
 	my $urlmd5=md5_hex($url);
 	$content->{url}=$url;	
+	
+	my @tmpdatalist=();
 	foreach my $piecedata(@datalist){
-		if(defined $piecedata->{durl}){#detail url
-			my $return=$self->digmappingv2($piecedata->{durl});
+		if(defined $piecedata->{surl}){#subchannel url
+			print "===============================================\n";
+			my $return=$self->digmappingv2($piecedata->{surl});
+			print "surl $piecedata->{surl}\n";
+#			print Dumper $return; 
+			my $returncontent =$return->{data};
+			my $cc=$piecedata->{cc};
+			print "cc:$cc .................\n";
+			delete $piecedata->{surl};
+			delete $piecedata->{cc};
+			foreach my $onedata (@$returncontent){
+				my $subcc=$onedata->{cc};
+				$onedata->{cc}=$cc."=>".$subcc;
+				print $cc."=>".$subcc."\n";
+				foreach my $d(keys %$piecedata){
+					$onedata->{$d}=$piecedata->{$d};
+				}
+				my %savedata=%$onedata;
+				push @tmpdatalist,\%savedata;
+#				print Dumper \%savedata;
+			}
+#			print "---------------\n";
+#			print Dumper @tmpdatalist;
+		}
+	}
+	if(scalar(@tmpdatalist)>0){
+		@datalist=@tmpdatalist;
+	}
+#	print "start datalist 2--------------------\n";
+#	print Dumper @datalist;
+#	print "end datalist 2--------------------\n";
+
+	@tmpdatalist=();
+	foreach my $piecedata(@datalist){
+		if(defined $piecedata->{durl}){#subchannel url
+			print "===============================================\n";
+			my $return=$self->digmappingv2($piecedata->{durl},$piecedata->{regxindex});
+			print "durl $piecedata->{surl}\n";
+#			print Dumper $return; 
 			my $returncontent =$return->{data};
 			delete $piecedata->{durl};
+			delete $piecedata->{regxindex};
 			foreach my $onedata (@$returncontent){
-				foreach my $d(keys %$onedata){
-					$piecedata->{$d}=$onedata->{$d};
+				foreach my $d(keys %$piecedata){
+					$onedata->{$d}=$piecedata->{$d};
 				}
+				my %savedata=%$onedata;
+				push @tmpdatalist,\%savedata;
+#				print Dumper \%savedata;
 			}
+#			print "---------------\n";
+#			print Dumper @tmpdatalist;
 		}
+	}
+	if(scalar(@tmpdatalist)>0){
+		@datalist=@tmpdatalist;
+		#######!!!!!!!!!!!!!!#####################
+		##Last process detail#####################
+	}
+
+	foreach my $piecedata(@datalist){
+#		if(defined $piecedata->{durl}){#detail url
+#			my $return=$self->digmappingv2($piecedata->{durl});
+#			my $returncontent =$return->{data};
+#			delete $piecedata->{durl};
+#			foreach my $onedata (@$returncontent){
+#				foreach my $d(keys %$onedata){
+#					$piecedata->{$d}=$onedata->{$d};
+#				}
+#			}
+#		}
 		if(defined $piecedata->{aurl}){#another url
-			my $return=$self->digmappingv2($piecedata->{aurl});
+			my $return=$self->digmappingv2($piecedata->{aurl},$piecedata->{regxindex});
 			my $returncontent =$return->{data};
 			delete $piecedata->{aurl};
-
+			delete $piecedata->{regxindex};
 			foreach my $onedata (@$returncontent){
-				$piecedata->{'cc'}.='=>'.$onedata->{'cc'};
+				if(defined $onedata->{'cc'}){
+					$piecedata->{'cc'}.='=>'.$onedata->{'cc'};
+				}
 				delete $onedata->{'cc'};
 				foreach my $d(keys %$onedata){
 					$piecedata->{$d}=$onedata->{$d};
@@ -273,17 +359,23 @@ sub digmappingv2{
 
 		}
 	}
-	foreach my $nurl(@tocrawlerurl){#next page url
-		my $return=$self->digmappingv2($piecedata->{nurl});
+#	print "start 3 datalist--------------------\n";
+#	print Dumper @datalist;
+#	print "end 3 datalist--------------------\n";
+	
+	foreach my $nurls(@tocrawlerurl){#next page url
+		print "aurl $nurl\n";
+		my $return=$self->digmappingv2($nurls->{nurl},$piecedata->{regxindex});
 		my $returncontent =$return->{data};
 		foreach my $onedata (@$returncontent){
 			push @datalist,$onedata;
 		}
 		
 	}
+	print "start content----------------\n";
 	$content->{data}=\@datalist;
 	print Dumper $content;
-
+	print "end	content----------------\n";
 	return $content;	
 }
 

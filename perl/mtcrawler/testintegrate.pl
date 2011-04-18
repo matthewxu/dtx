@@ -17,7 +17,14 @@ my $args={'base'=>$base,'config'=>$config};
 #print Dumper $args;
 my $cm=cm->new(%$args);
 my $starturl='http://www.xungou.com/';
-$cm->digmappingv2($starturl);
+#my $starturl='http://www.xungou.com/channel_electronics/';
+my $content=$cm->digmappingv2($starturl)->{data};
+foreach my $cc(@$content){
+#	print $cc->{cc}."\n";
+	while(my($k,$v)=each %$cc){
+		print "$k,$v\n";
+	}
+}
 
 
 
