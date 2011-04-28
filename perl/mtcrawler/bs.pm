@@ -73,10 +73,17 @@ sub download{
 return "$crawlerdatafold/$realname";	
 }
 
-#sub saveCallBack{
-#	my($data, $response, $protocol) = @_;
-#	
-#}
+sub post{
+	my($self, $posturl, $params,$debug) = @_;
+	my $response = $self->{ua}->post($posturl, $params,);	
+	print "INFO: Login Result".$response->status_line()."\n";
+#	print Dumper $response if $debug;
+	if ($response->status_line() !~ /^200 OK$/i){
+		print "ERROR: ".$response->status_line().", please contact technical support...\n";
+	} else {
+	}
+	return $response->content();
+}
 
 sub getReString{
 
@@ -88,7 +95,7 @@ sub getReString{
 	unless($self->{url}){
 		return '<no>no url</no>';	
 	}
-	my $response = $ua->get($self->{url});
+	my $response = $self->{ua}->get($self->{url});
 	my $string=$response->content();
 return $string; 
 }
@@ -98,8 +105,17 @@ sub getCachedFile{
 		my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
 		my $urlmd5=md5_hex($url);			
 		return "$crawlerdatafold/$urlmd5" if(-e "$crawlerdatafold/$urlmd5");
-		return $self->savecontent($url,$self->getReXMLString($url));
+		return $self->savecontent($url,$self->getReString($url));
 }
+
+sub getFilePath{
+		my($self,$url)=@_;
+		my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
+		my $urlmd5=md5_hex($url);			
+		return "$crawlerdatafold/$urlmd5";
+}
+
+
 sub getReXMLString{
 
 	my($self,$url)=@_;

@@ -20,10 +20,10 @@ my $starturl='http://www.xungou.com/';
 #my $starturl='http://www.xungou.com/channel_electronics/';
 my $content=$cm->digmappingv2($starturl)->{data};
 foreach my $cc(@$content){
-#	print $cc->{cc}."\n";
-	while(my($k,$v)=each %$cc){
-		print "$k,$v\n";
-	}
+	print $cc->{cc}."\n";
+#	while(my($k,$v)=each %$cc){
+#		print "$k,$v\n";
+#	}
 }
 
 

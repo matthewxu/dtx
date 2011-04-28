@@ -7,6 +7,7 @@ use FileHandle;
 use Bloom::Filter;
 use XML::XPath;
 use XML::XPath::XMLParser;
+use HTML::TreeBuilder::XPath;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use Data::Dumper;
 use cf;
@@ -73,57 +74,6 @@ sub urlDone{
 	return 1;
 }
 
-sub digmapping{
-#mapping for content to save
-	my($self,$url,$file,@others)=@_;
-	my $mp=$cf->getmpcf()->{'mp'};
-	my $content=();
-	foreach my $regx (keys %$mp){
-	#loop url regx
-		if($url=~/$regx/){
-			my $xpaths=$mp->{$regx};
-			foreach my $xpath (keys %$xpaths){
-				my $type=$xpaths->{$xpath}->{type};
-				my $name=$xpaths->{$xpath}->{name};
-				my @data=();	
-				if($type eq 'img'){
-				#download and save path			
-#					$self->{bs}->
-				}elsif($type eq 'text'){
-				#save text
-					my $xp = XML::XPath->new(filename => $file);
-					my $nodeset = $xp->find($xpath); 
-    					foreach my $node ($nodeset->get_nodelist) {
-				    		print $node->getValue."\n";
-						push @data, $node->getValue;
-					}		
-				}elsif($type eq 'nurl'){
-				#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
-										
-				}elsif($type eq 'aurl'){
-				#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
-					                                
-                }elsif($type eq 'mtext'){
-               	#how to handle array content 
-				#eg.	one product ,many imgs,many merchants
-                                
-                                
-                                
-                }elsif($type eq 'texturl'){
-                            
-                                
-                                
-                                
-                }
-				$content->{$name}=\@data;
-			}
-
-		}
-	}
-	print Dumper $content;
-
-	return $content;	
-}
 
 #############################################################################
 #content data meta
@@ -155,12 +105,14 @@ sub digmappingv2{
 	my @datalist=();
 	foreach my $regx (keys %$mp){
 	#loop url regx
-		print "$regx,$url: \n";
+		print "$regx,$url:$file \n";
 		if(($url=~/$regx/ &&(!$regxindex)) || ($regxindex && $regxindex eq $mp->{$regx}->{'index'} ) ) {
 			my $pagetype=$mp->{$regx}->{pagetype};
 			print "match $pagetype\n"; 
 			#xpath instants
-			my $xp = XML::XPath->new(filename => $file);
+#			my $xp = XML::XPath->new(filename => $file);
+			my $xp = HTML::TreeBuilder::XPath->new();
+			$xp->parse_file($file);
 			#get root xpath
 			my $xpaths=$mp->{$regx}->{xpath};
 			#page type: channelcat,list,detail. if detail, just single thread(proc),other, fork new thread(proc)
@@ -172,15 +124,14 @@ sub digmappingv2{
 			foreach my $xpath (keys %$xpaths){
 				print "first xpath $xpath\n";
 				#get the first node list
-				my $nodeset = $xp->find($xpath);
+				my $nodeset = $xp->findnodes($xpath);
 				#store one piece of onething data inhash		
-					
 				foreach my $node ($nodeset->get_nodelist) {
 					#get 2 level xpath list
 					my $xpathlist=$xpaths->{$xpath};
-					my $nodestring= XML::XPath::XMLParser::as_string($node);
+#					my $nodestring= XML::XPath::XMLParser::as_string($node);
 					print "subNode: $nodestring\n";
-					my $xp2=XML::XPath->new($nodestring);
+#					my $xp2=XML::XPath->new($nodestring);
 #					print Dumper $xp2;
 #					die;
 					my %datahash=();
@@ -193,9 +144,9 @@ sub digmappingv2{
 							my $ntype=$data->{$xpath2};	
 							my ($name,$type,$regxindex)=split '=',$ntype;
 							print "xpath: $xpath2\n";
-							my $nodeset2 = $xp2->find($xpath2);	
-							foreach my $node2 ($nodeset2->get_nodelist) {
-								my $nodevalue=$node2->getValue;
+#							my $nodeset2 = $xp2->find($xpath2);	
+#							foreach my $node2 ($nodeset2->get_nodelist) {
+								my $nodevalue=$node->findvalue($xpath2);
 								print "$name\t$nodevalue\t$type\n";
 								if($type eq 'img'){
 									#download and save path			
@@ -233,7 +184,7 @@ sub digmappingv2{
 									my %tmpurls=();
 									$tmpurls{'nurl'}=$fixedurl;
 									$tmpurls{'regxindex'}=$regxindex;
-									push @tocrawlerurl,%tmpurls;#crawler it later
+									push @tocrawlerurl,\%tmpurls;#crawler it later
 								}elsif($type eq 'aurl'){
 									#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
 									my $fixedurl=$self->getbrowser()->fixurl($nodevalue);
@@ -248,8 +199,8 @@ sub digmappingv2{
 				                	$datahash{$name}=$nodevalue;
 				                }	
 				                #in my case,it should be just one data.
-				                last;										
-							}
+#				                last;										
+#							}
 						} 
 					}
 					#################################
@@ -303,6 +254,8 @@ sub digmappingv2{
 #	print Dumper @datalist;
 #	print "end datalist 2--------------------\n";
 
+#####Last Data set , Not store in Memory###
+#TODO####Store into DB or File#########
 	@tmpdatalist=();
 	foreach my $piecedata(@datalist){
 		if(defined $piecedata->{durl}){#subchannel url
@@ -320,6 +273,9 @@ sub digmappingv2{
 				my %savedata=%$onedata;
 				push @tmpdatalist,\%savedata;
 #				print Dumper \%savedata;
+				foreach my $colname(keys %savedata){
+					print "Col:".$colname."\t".$savedata{$colname}."\n";
+				}
 			}
 #			print "---------------\n";
 #			print Dumper @tmpdatalist;
@@ -332,16 +288,7 @@ sub digmappingv2{
 	}
 
 	foreach my $piecedata(@datalist){
-#		if(defined $piecedata->{durl}){#detail url
-#			my $return=$self->digmappingv2($piecedata->{durl});
-#			my $returncontent =$return->{data};
-#			delete $piecedata->{durl};
-#			foreach my $onedata (@$returncontent){
-#				foreach my $d(keys %$onedata){
-#					$piecedata->{$d}=$onedata->{$d};
-#				}
-#			}
-#		}
+
 		if(defined $piecedata->{aurl}){#another url
 			my $return=$self->digmappingv2($piecedata->{aurl},$piecedata->{regxindex});
 			my $returncontent =$return->{data};
@@ -364,18 +311,18 @@ sub digmappingv2{
 #	print "end 3 datalist--------------------\n";
 	
 	foreach my $nurls(@tocrawlerurl){#next page url
-		print "aurl $nurl\n";
-		my $return=$self->digmappingv2($nurls->{nurl},$piecedata->{regxindex});
+		print "nurl:::: $nurls->{nurl}\n";
+		my $return=$self->digmappingv2($nurls->{nurl},$nurls->{regxindex});
 		my $returncontent =$return->{data};
 		foreach my $onedata (@$returncontent){
 			push @datalist,$onedata;
 		}
 		
 	}
-	print "start content----------------\n";
+#	print "start content----------------\n";
 	$content->{data}=\@datalist;
-	print Dumper $content;
-	print "end	content----------------\n";
+#	print Dumper $content;
+#	print "end	content----------------\n";
 	return $content;	
 }
 

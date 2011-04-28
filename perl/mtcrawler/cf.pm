@@ -8,7 +8,7 @@ my $fo=new fo();
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
-		$self->{base}=$args{'base'} || '/home/mxu/data';
+		$self->{base}=$args{'base'} || '.';
 		$self->{config}=$self->{base}."/".$args{'config'} || $self->{base}.'/config.mt';
 		$self->{urltofile}=$self->{base}.'/urltofile.mt';	
 		$self->{crawlerdata}=$self->{base}.'/crawlerdata';

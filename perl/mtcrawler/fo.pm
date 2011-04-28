@@ -173,18 +173,18 @@ sub appendStringToFile
 	$self->lockfile($to,'LOCK_EX',300,600) if(!$nolock);
 	my $errmsg='';
 	unless($encode){
-	$encode='utf8'
+		$encode='utf8';
 	}
 	my $fhto = new FileHandle();
 	if($overwrite)
 	{
-		open($fhto, ">:$encode", $to) or $errmsg.=$!.";Open file $to failed\n";;;
+		open($fhto, ">", $to) or $errmsg.=$!.";Open file $to failed\n";;;
 		#$fhto->open("> $to") or $errmsg.="Open file $to failed\n";
 	}
 	else
 	{
 		#$fhto->open(">> $to") or $errmsg.="Open file $to failed\n";
-		open($fhto, ">>:$encode", $to) or $errmsg.=$!.";Open file $to failed\n";;
+		open($fhto, ">>", $to) or $errmsg.=$!.";Open file $to failed\n";;
 	}
 	
 	if(!$errmsg) {
