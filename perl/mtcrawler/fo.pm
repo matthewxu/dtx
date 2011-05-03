@@ -7,7 +7,7 @@ use strict;
 use warnings;
 no warnings qw(uninitialized numeric);
 use Fcntl ':flock'; # import LOCK_* constants 
-
+use File::Copy;
 use Digest::MD5;
 use Data::Dumper;
 use FileHandle;
@@ -113,10 +113,11 @@ sub movefile{
 	my ($self,$from,$to,@args) = @_;
 	$self->lockfile($to,'LOCK_EX',600,1000);
 	print "mv $from $to ...\n";
-	my $status = system("mv $from $to");
+	my $status = move($from, $to);
+	print "status:$status\n";
 	$self->unlockfile($to);
 	
-	if($status > 0)
+	if($status !=1)
 	{
 		my $oSendMail = sm->new(
 							'debug'=>$self->{"debug"},
@@ -125,7 +126,7 @@ sub movefile{
 		$oSendMail->send_email(subject => "move failed: mv $from $to!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
 					 text => "move failed: mv $from $to, please manual move the file!\n",
 					 to => 'matthewatmezi@gmail.com, matthewatmezi@gmail.com');
-		die "die: movefile failed: mv $from $to\n";
+		print "die: movefile failed: mv $from $to\n";
 	}
 	
 	print "done!\n";

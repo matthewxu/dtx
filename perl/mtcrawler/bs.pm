@@ -60,11 +60,10 @@ sub download{
 	}
 	my $request = HTTP::Request->new('GET', $url);
 	my $urlmd5=md5_hex($url);		
-	my $crawlerdatafold=$self->{cf}->{'crawlerdata'};	
+	my $crawlerdatafold=$self->{cf}->{'crawlerdownfile'};	
 	my $crawlerdatafoldtmp=$self->{cf}->{'crawlerdatatmp'};
-	
-	print 	$crawlerdatafold."\n";
-	print 	$crawlerdatafoldtmp."\n";
+#	print 	$crawlerdatafold."\n";
+#	print 	$crawlerdatafoldtmp."\n";
 	my $response = $ua->request($request, "$crawlerdatafoldtmp/$urlmd5"); 
 	my $realname=$response->filename || "$urlmd5";
 	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");

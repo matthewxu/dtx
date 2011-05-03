@@ -312,9 +312,9 @@ sub digmappingv2{
 				print $linedata."\n";
 				
 			}
-			print Dumper $returncontent;
-			die;
 			delete $return->{data};
+			$return=();
+			undef $return;
 		}
 	}
 #	if(scalar(@tmpdatalist)>0){

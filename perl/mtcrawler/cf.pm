@@ -12,9 +12,11 @@ sub new{
 		$self->{config}=$self->{base}."/".$args{'config'} || $self->{base}.'/config.mt';
 		$self->{urltofile}=$self->{base}.'/urltofile.mt';	
 		$self->{crawlerdata}=$self->{base}.'/crawlerdata';
+		$self->{crawlerdownfile}=$self->{base}.'/crawlerdownfile';
 		$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';
 		$fo->check_path($self->{urltofile},1);
 		$fo->check_path($self->{crawlerdata}."/",1);
+		$fo->check_path($self->{crawlerdownfile}."/",1);
 		$fo->check_path($self->{crawlerdatatmp}."/",1);
 		return $self;
 }
