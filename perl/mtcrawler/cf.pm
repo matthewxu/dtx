@@ -45,6 +45,7 @@ sub getmpcfV2{
                 my $fh=new FileHandle();
                 $fh->open($self->{config}) || die "open $self->{config} failed";
                 while(my $l=<$fh>){
+                		chomp($l);
                         my($regx,$xpath,$pagetype,$index)=split '\t', $l;
                         $regx=rg->specialtag($regx);
                         print "$regx\n"; 

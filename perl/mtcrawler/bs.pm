@@ -172,15 +172,17 @@ my($self)=@_;
 
 sub fixurl
 {
-	my($self,$url)=@_;
+	my($self,$url,$hostname)=@_;
 	if($url=~/^http:\/\//i){
 		return $url;
 	}
-	
+	unless($hostname){
+		$hostname=$self->{host};
+	}
 	if( $url=~/^www\./i){
 		return "http://".$url;
 	}else{
-		return "http://".$self->{host}.$url;
+		return "http://".$hostname.$url;
 	}
 }
 1;
