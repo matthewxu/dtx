@@ -10,15 +10,17 @@ use XML::XPath::XMLParser;
 use HTML::TreeBuilder::XPath;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use Data::Dumper;
+use Devel::Size qw(size total_size);
 use cf;
 use bs;
-my $COUNT=10000000;
+my $COUNT=1000000;
 my $bfilter = Bloom::Filter->new( error_rate => 0.0000001, capacity => $COUNT );
 my $cf;
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
-        $self->{base}=$args{'base'};
+        $self->{base}=$args{'base'}; 
+        $self->{debug}=$args{'debug'}|| 1;
         $self->{config}=$args{'config'};
         print "cm init....\n";
 		$cf=new cf(%args);
@@ -29,7 +31,7 @@ sub getnewbrowser{
 	my($self,@others)=@_;
 	my $args={'base'=>"$self->{base}",'config'=>"$self->{config}"};
 
-	print Dumper \$args; 
+	print Dumper \$args if($self->{debug});
 	my $b=new bs(%$args);
 	return $b;	
 }
@@ -96,16 +98,14 @@ sub urlDone{
 sub digmappingv2{
 	#mapping for content to save
 	my($self,$url,$regxindex,$mycontent,$file,@others)=@_;
-#	if($regxindex==3){
-#		print "$url,$regxindex\n";
-#	}
+
 	unless($file){
 		my $b=$self->getbrowser();
 		$b->seturl($url);
 		$file=$b->getCachedFile($url);
 	}
 	my $mp=$cf->getmpcfV2()->{'mpv2'};
-#print Dumper $mp;
+	print Dumper $mp if($self->{debug});
 	my $content=();
 	my @tocrawlerurl=();
 	my @datalist=();
@@ -115,7 +115,7 @@ sub digmappingv2{
 		if(($url=~/$regx/ &&(!$regxindex)) || ($regxindex && $regxindex eq $mp->{$regx}->{'index'} ) ) {
 			print "match ======================== \n";
 			my $pagetype=$mp->{$regx}->{pagetype};
-			print "match $pagetype\n"; 
+			print "match $pagetype\n" if($self->{debug}); 
 			#xpath instants
 #			my $xp = XML::XPath->new(filename => $file);
 			my $xp = HTML::TreeBuilder::XPath->new();
@@ -136,19 +136,15 @@ sub digmappingv2{
 				foreach my $node ($nodeset->get_nodelist) {
 					#get 2 level xpath list
 					my $xpathlist=$xpaths->{$xpath};
-					print "subNode: $nodestring\n";
 					my %datahash=();
-										
 					############seconde XPath json iterator##get same level content##################
 					foreach $data(@$xpathlist){
-						
 						foreach my $xpath2(keys %$data){
-
 							my $ntype=$data->{$xpath2};	
 							my ($name,$type,$regxindex)=split '=',$ntype;
-							print "xpath: $xpath2\n";
+							print "xpath: $xpath2\n" if($self->{debug}); 
 								my $nodevalue=$node->findvalue($xpath2);
-								print "$name\t$nodevalue\t$type\n";
+								print "$name\t$nodevalue\t$type\n" if($self->{debug}); 
 								if($type eq 'img'){
 									#download and save path			
 									my $bs=$self->getbrowser();
@@ -164,7 +160,7 @@ sub digmappingv2{
 									$fixedurl=$bs->fixurl($nodevalue);
 									$datahash{surl}=$fixedurl;
 									$datahash{regxindex}=$regxindex;
-									print "surl: $fixedurl\n";
+									print "surl: $fixedurl\n" if($self->{debug}); 
 								}elsif($type eq 'durl'){
 									#detail url, this mean we are in list page.
 									#todo callback or call another digmappings
@@ -180,7 +176,7 @@ sub digmappingv2{
 #									push @tocrawlerurl,$fixedurl;#crawler it later
 									$datahash{lurl}=$fixedurl;	
 									$datahash{regxindex}=$regxindex;
-									print "lurl: $fixedurl\n";
+									print "lurl: $fixedurl\n" if($self->{debug}); 
 								}
 								elsif($type eq 'nurl'){
 									#nexturl: eg. pagination "products fenye 1,2,,", just crawl it, not save the name or others
@@ -191,7 +187,7 @@ sub digmappingv2{
 									my %tmpurls=();
 									$tmpurls{'nurl'}=$fixedurl;
 									$tmpurls{'regxindex'}=$regxindex;
-									print "nurl: $fixedurl\n";
+									print "nurl: $fixedurl\n" if($self->{debug}); 
 									push @tocrawlerurl,\%tmpurls;#crawler it later
 								}elsif($type eq 'aurl'){
 									#anotherurl: eg. computerpage=>dellpage save "computer=>dell dellpageurl"
@@ -199,7 +195,7 @@ sub digmappingv2{
 									my $fixedurl=$bs->fixurl($nodevalue);
 									$datahash{aurl}=$fixedurl;	
 									$datahash{regxindex}=$regxindex;
-									print "aurl: $fixedurl\n";							                                
+									print "aurl: $fixedurl\n" if($self->{debug}); 						                                
 				                }else{
 				                	$datahash{$name}=$nodevalue;
 				                }	
@@ -214,6 +210,7 @@ sub digmappingv2{
 			print "not match \n";
 		}
 	}
+	print "we get dataset:".scalar(@datalist)."\n";
 	##### deal with need-to-be-handle url in datalist;
 	my $urlmd5=md5_hex($url);
 	$content->{url}=$url;	
@@ -238,12 +235,14 @@ sub digmappingv2{
 				my %savedata=%$onedata;
 				push @tmpdatalist,\%savedata;
 			}
+			undef($return->{data});
 		}
 	}
+	
 	if(scalar(@tmpdatalist)>0){
 		@datalist=@tmpdatalist;
 	}
-
+	print "we get dataset:".scalar(@datalist)."\n";
 
 
 	foreach my $piecedata(@datalist){
@@ -262,6 +261,7 @@ sub digmappingv2{
 					$piecedata->{$d}=$onedata->{$d};	
 				}
 			}
+			undef($return->{data});
 		}
 	}
 	
@@ -274,18 +274,18 @@ sub digmappingv2{
 		}
 		
 	}
+	undef(@tocrawlerurl);
 	####durl:detail url, also the last url,Last Data set , Not store in Memory###
 	#TODO####Store into DB or File#########
 #	@tmpdatalist=();
 	foreach my $piecedata(@datalist){
-		if(defined $piecedata->{durl}){#subchannel url
+		if(defined $piecedata->{durl} && !$self->isDone($piecedata->{durl})){
 			print "durl::::>>>>>>>>> $piecedata->{durl},$piecedata->{regxindex}\n";
 			my $return=$self->digmappingv2($piecedata->{durl},$piecedata->{regxindex});
-			print "durl.... $piecedata->{durl}\n";
+			print "durl.... $piecedata->{durl}\n" if($self->{debug}); 
 			my $returncontent =$return->{data};
-			delete $piecedata->{durl};
 			delete $piecedata->{regxindex};
-			print Dumper $returncontent;
+			print Dumper $returncontent if($self->{debug});
 			foreach my $onedata (@$returncontent){
 				foreach my $d(keys %$piecedata){
 					$onedata->{$d}=$piecedata->{$d};
@@ -310,11 +310,12 @@ sub digmappingv2{
 				}
 				$self->{cols}=	$cols;
 				print $linedata."\n";
-				
+				$self->saveResult($linedata);
 			}
-			delete $return->{data};
-			$return=();
-			undef $return;
+
+			$self->urlDone($piecedata->{durl});
+			undef($return->{data});
+			delete $piecedata->{durl};
 		}
 	}
 #	if(scalar(@tmpdatalist)>0){
@@ -327,46 +328,86 @@ sub digmappingv2{
 }
 
 
+sub isDone{
+	my($self,$url,@others)=@_;
+	my $bfilterurls=$self->getDoneUrl();
+	if($bfilterurls->check(md5_hex($url))){
+		return 1;
+	}
+	return 0;
+}
+
+
+
+
+sub saveResult{
+	my($self,$result,@others)=@_;
+    my $resultfile=$cf->{'result'}.$self->{batchid};
+    print $resultfile."\n";
+    my $fh;
+	if(defined $self->{resulthandle}) {
+		$fh= $self->{resulthandle};
+	}else{
+		$fh=new FileHandle();
+        $fh->open(">> $resultfile") || die "$resultfile fail\n";
+		$fh->autoflush(1);       
+	 	$self->{resulthandle}=$fh;
+	}
+	print $fh "$result\n";
+}
+
+
+
 sub saveDoneUrl{
 	my($self,$url,$key,@others)=@_;
-        my $urltofile=$cf->getfilecf()->{'urltofile'}.$self->{batchid};
-	
-        my $fh;
+    my $urltofile=$cf->{'urltofile'}.$self->{batchid};
+    print $urltofile."\n";
+    my $fh;
 	if(defined $self->{doneurlhandle}) {
 		$fh= $self->{doneurlhandle};
 	}else{
-	$fh=new FileHandle();
+		$fh=new FileHandle();
         $fh->open(">> $urltofile") || die "$urltofile fail\n";
-	$fh->autoflush(1);       
-	 $self->{doneurlhandle}=$fh;
+		$fh->autoflush(1);       
+	 	$self->{doneurlhandle}=$fh;
 	}
 	print $fh "$key\t$url\n";
-	
+	$self->getDoneUrl()->add($key);
 }
 sub getDoneUrl{
-        my($self,@others)=@_;
+    my($self,@others)=@_;
 	if(defined $self->{bfilter}){
 		return $bfilter;
 	}        
-        my $urltofile="$cf->getfilecf()->{'urltofile'}.$self->{batchid}";
-        my $fh=new FileHandle();
-        $fh->open($urltofile) || die "$urltofile fail\n";
+    my $urltofile=$cf->{'urltofile'}.$self->{batchid};
+    unless(-e $urltofile) {return $bfilter};
+    my $fh=new FileHandle();
+    $fh->open($urltofile) || die "$urltofile fail\n";
 	while(my $l=<$fh>){
+		chomp($l);
 		my($md5,$url)=split '\t',$l;
 		$bfilter->add($md5);
-		
 	}	
 	close $fh;
 	$self->{bfilter}=$bfilter;
 	return $bfilter;
 } 
 
-
+sub print_size{
+	my($self,$date,$name,@others)=@_;
+	print "$name hash memory bytes>>>>>>>>>>>>:".size($data)."\n";
+	print "$name total memory bytes>>>>>>>>>>>>:".total_size($data)."\n";
+	print "$name data memory bytes>>>>>>>>>>>>:".(total_size($data)-size($data))."\n";
+}
 sub _destroy{
 	my($self,@others)=@_;
 	if(defined $self->{doneurlhandle}){
-	close $self->{doneurlhandle};
-	undef $self->{doneurlhandle};
+		close $self->{doneurlhandle};
+		undef $self->{doneurlhandle};
+	}
+	if(defined $self->{resulthandle}){
+		close $self->{resulthandle};
+		undef $self->{resulthandle};
 	}
 }
 

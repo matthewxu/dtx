@@ -21,6 +21,7 @@ use HTML::TreeBuilder;
 use cf;
 use fo;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
+use Encode qw/encode decode from_to/;
 my $cookiefile='cookiefile';
 
 my $ua = LWP::UserAgent->new;
@@ -69,7 +70,7 @@ sub download{
 	$fo->movefile("$crawlerdatafoldtmp/$urlmd5","$crawlerdatafold/$realname");
 	# 	my $response = $ua->request($request, \&saveCallBack, 4096);
 
-return "$crawlerdatafold/$realname";	
+	return "$crawlerdatafold/$realname";	
 }
 
 sub post{
@@ -96,6 +97,10 @@ sub getReString{
 	}
 	my $response = $self->{ua}->get($self->{url});
 	my $string=$response->content();
+	 $string        = decode("gb2312", $string); 
+	 $string      = encode("utf8", $string); 
+
+	
 return $string; 
 }
 

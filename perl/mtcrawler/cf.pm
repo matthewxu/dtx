@@ -11,6 +11,7 @@ sub new{
 		$self->{base}=$args{'base'} || '.';
 		$self->{config}=$self->{base}."/".$args{'config'} || $self->{base}.'/config.mt';
 		$self->{urltofile}=$self->{base}.'/urltofile.mt';	
+		$self->{result}=$self->{base}.'/result.mt';	
 		$self->{crawlerdata}=$self->{base}.'/crawlerdata';
 		$self->{crawlerdownfile}=$self->{base}.'/crawlerdownfile';
 		$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';
@@ -42,7 +43,10 @@ sub getmpcf{
 	return $self;
 }
 sub getmpcfV2{
-	my($self)=@_;        
+	my($self)=@_;    
+	if(defined $self->{mpv2})    {
+		return $self;
+	}
     if($self->{config}){
                 my $fh=new FileHandle();
                 $fh->open($self->{config}) || die "open $self->{config} failed";
@@ -50,7 +54,7 @@ sub getmpcfV2{
                 		chomp($l);
                         my($regx,$xpath,$pagetype,$index)=split '\t', $l;
                         $regx=rg->specialtag($regx);
-                        print "$regx\n"; 
+                        print "$regx,$xpath,$pagetype,$index\n"; 
          				my $xpathhash = from_json( $xpath, { utf8  => 1 } );               
 						$self->{mpv2}->{$regx}->{xpath}=$xpathhash;
 						$self->{mpv2}->{$regx}->{pagetype}=$pagetype;
