@@ -4,28 +4,27 @@ use JSON qw/to_json from_json/;
 use fo;
 use Data::Dumper;
 use rg;
+use   Cwd; 
 my $fo=new fo();
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
 		$self->{base}=$args{'base'} || '.';
+		$self->{listname}=$args{'listname'} || 'list.mt';
 		$self->{config}=$self->{base}."/".$args{'config'} || $self->{base}.'/config.mt';
-		$self->{urltofile}=$self->{base}.'/urltofile.mt';	
+		$self->{urltofile}=$self->{base}.'/urltofile.mt';		
 		$self->{result}=$self->{base}.'/result.mt';	
-		$self->{crawlerdata}=$self->{base}.'/crawlerdata';
-		$self->{crawlerdownfile}=$self->{base}.'/crawlerdownfile';
-		$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';
+		$self->{crawlerdatatmp}=$self->{base}.'/crawlerdatatmp';#tmp files
+		$self->{crawlerdata}=$self->{base}.'/crawlerdata';#crawler original 
+		$self->{crawlerdownfile}=$self->{base}.'/crawlerdownfile';#download files
+		$self->{resultdata}=$self->{base}.'/result';#paser files
 		$fo->check_path($self->{urltofile},1);
 		$fo->check_path($self->{crawlerdata}."/",1);
 		$fo->check_path($self->{crawlerdownfile}."/",1);
 		$fo->check_path($self->{crawlerdatatmp}."/",1);
+		$fo->check_path($self->{resultdata}."/",1);
 		return $self;
 }
-#sub getfilecf{
-#	my($self,@others)=@_;
-#
-#	return $self;
-#}
 
 sub getmpcf{
 	my($self)=@_;        

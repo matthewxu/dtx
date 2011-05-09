@@ -105,12 +105,21 @@ return $string;
 }
 
 sub getCachedFile{
-		my($self,$url)=@_;
+		my($self,$url,$type,$refresh)=@_;
 		my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
 		my $urlmd5=md5_hex($url);			
-		return "$crawlerdatafold/$urlmd5" if(-e "$crawlerdatafold/$urlmd5");
-		return $self->savecontent($url,$self->getReString($url));
+		return "$crawlerdatafold/$urlmd5".$type if(-e "$crawlerdatafold/$urlmd5".$type && (!$refresh));
+		return $self->savecontent($url,$self->getReString($url),$type);
 }
+
+sub checkCachedFile{
+		my($self,$url,$type,$refresh)=@_;
+		my $crawlerdatafold=$self->{cf}->{'crawlerdata'};
+		my $urlmd5=md5_hex($url);			
+		return 1 if(-e "$crawlerdatafold/$urlmd5".$type);
+		return 0;
+}
+
 
 sub getFilePath{
 		my($self,$url)=@_;
@@ -137,7 +146,7 @@ return $string;
 }
 
 sub savecontent{
-	my ($self,$url,$content)=@_;
+	my ($self,$url,$content,$type)=@_;
 	if($url){
 #		$logouturl=$url;
 		$self->{url}=$url;
@@ -150,8 +159,8 @@ sub savecontent{
 #	if(system("echo '$content' > $crawlerdatafold/$urlmd5")){
 #		die "echo  > $crawlerdatafold/$urlmd5 fail \n";
 #	}
-	$fo->appendStringToFile("$crawlerdatafold/$urlmd5",$content,1);
-return "$crawlerdatafold/$urlmd5";
+	$fo->appendStringToFile("$crawlerdatafold/$urlmd5".$type,$content,1);
+	return "$crawlerdatafold/$urlmd5".$type;
 
 }
 

@@ -5,3 +5,11 @@ my $jsontext='{"test":[{"city":"bj","size":16800,"pop":1600},{"city":"sh","size"
 
 my $h = from_json( $jsontext );
 print Dumper $h;
+
+my $h=();
+
+$h->{a}=11;
+$h->{b}=12;
+my $s=to_json($h);
+
+print "================\n$s";
