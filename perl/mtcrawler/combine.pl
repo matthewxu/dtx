@@ -12,15 +12,15 @@ use Digest::MD5 qw(md5 md5_hex md5_base64);
 #my $bfilter = Bloom::Filter->new( error_rate => 0.0000001, capacity => $COUNT );
 my $base='testdata';
 my $config='config.mt.zol.2';
-my $starturl='http://detail.zol.com.cn/subcategory.html';
 my $daemon;
 my $forcerefresh=0;
 my $index;
+my $theme='data_';
 my $options = GetOptions (
 			'base=s'		=> \$base,
-			'starturl=s'	=>\$starturl,
 			'index=s'		=>\$index,
 			'config=s'		=> \$config,
+			'theme=s'		=>\$theme,
 			'forcerefresh=s'		=> \$forcerefresh,
 			'daemon!'		=> \$daemon,
 			);
@@ -34,15 +34,25 @@ if ($daemon) {
 			
 			
 print "Input base:$base,config:$config\n";
-
-my $args={'base'=>$base,'config'=>$config};
+my $args={'base'=>$base,'config'=>$config};			
+my $cf= cf->new(%$args);
 #print Dumper $args;
 my $cm=cm->new(%$args);
-print "processing url:$index\t$starturl\n";
-my $content=$cm->digmapping($starturl,$index);
+my $flist=fo->getfilelist($cf->{resultdata});
+foreach my $file(@$flist){
+	print $file."\n";
+	
+	my $filename=1;
+	if($file=~/.*\/(.*?)\.txt/){
+		$filename=$1;
+	}
+	
+	$cm->DBDataResult($file,"$theme".$filename)
+}
+#my $content=$cm->digmapping($starturl,$index)s;
 
 
 
 
 
-print "___Parser_Finish__\n";
+print "___Combine_Finish__\n";

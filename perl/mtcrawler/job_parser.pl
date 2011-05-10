@@ -19,11 +19,13 @@ my $daemon;
 my $forcerefresh=0;
 my $index=0;
 my $batchid='';
+my $theme='data_';
 my $options = GetOptions (
 			'base=s'		=> \$base,
 			'starturl=s'	=>\$starturl,
 			'index=s'		=>\$index,
 			'config=s'		=> \$config,
+			'theme=s'		=> \$theme,
 			'forcerefresh=s'		=> \$forcerefresh,
 			'daemon!'		=> \$daemon,
 			'batchid=s'		=>\$batchid,
@@ -50,7 +52,7 @@ my $donefile=$cf->{'base'}."/done.txt".$batchid;
 my $fhdone=new FileHandle();
 $fhdone->open(">$donefile") || die "open $donefile fail\n";
 system("perl parser.pl --starturl=$starturl --index=$index");
-$bfilter->add(md5($starturl));
+$bfilter->add(md5_hex($starturl));
 print $fhdone "$starturl\t$index\t1\n";
 
 my @tmpurls=();
@@ -79,14 +81,14 @@ if(-e $sameurlfile){
 	my $i=0;
 	foreach my $todourl(sort{$a cmp $b} @urls){
 		my ($newurl,$newindex,$status)=split /\t/,$todourl;
-		if($bfilter->check(md5($newurl))){
+		if($bfilter->check(md5_hex($newurl))){
 			print "next, dup url $starturl\n";
 			next;
 		}
 		print $i++," cmd: perl parser.pl --starturl=$newurl --index=$newindex\n";
 		system("perl parser.pl --starturl=$newurl --index=$newindex");
 		print $fhdone "$newurl\t$newindex\t1\n";
-		$bfilter->add(md5($newurl));
+		$bfilter->add(md5_hex($newurl));
 	}
 	#end parser
 }
@@ -117,14 +119,14 @@ if(-e $nexturlfile){
 	my $i=0;
 	foreach my $todourl(sort{$a cmp $b} @urls){
 		my ($newurl,$newindex,$status)=split /\t/,$todourl;
-		if($bfilter->check(md5($newurl))){
+		if($bfilter->check(md5_hex($newurl))){
 			print "next, dup url $starturl\n";
 			next;
 		}
 		print $i++," cmd:perl parser.pl --starturl=$newurl --index=$newindex\n";
 		system("perl parser.pl --starturl=$newurl --index=$newindex");
 		print $fhdone "$newurl\t$newindex\t1\n";
-		$bfilter->add(md5($newurl));
+		$bfilter->add(md5_hex($newurl));
 	}
 
 	#end parser
@@ -133,4 +135,9 @@ if(-e $nexturlfile){
 goto loop if(-e $sameurlfile);
 goto looptwo if(-e $nexturlfile);
 close $fhdone;
+
+print "now we process data list..............\n";
+my $cmd="perl combine.pl --config=$config --base=$base";
+print $cmd."\n";
+system($cmd);
 print "___Finish__\n";

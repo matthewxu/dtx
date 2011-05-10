@@ -266,6 +266,22 @@ sub getfilecounts {
 	return $filecount;
 }
 
+sub getfilelist {
+	my ($self,$fold,@args)=@_;
+	my $dir=$fold;
+
+	opendir DD, "$dir" or die "Could not opendir $dir: $!";
+	my @filelist=();
+	while ($_=readdir(DD)) {
+		print "*";
+		next if ($_ eq "." or $_ eq "..");
+		next if -d "$dir/$_";
+		#next if !(/_(\d\d\d\d\d\d\d\d)\.dat$/);
+		push @filelist,"$dir/$_";
+	}
+	closedir DD;
+	return \@filelist;
+}
 
 sub filesize {
 	my ($self,$filename,@args)=@_;

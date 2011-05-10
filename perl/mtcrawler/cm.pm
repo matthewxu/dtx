@@ -13,16 +13,19 @@ use Data::Dumper;
 use Devel::Size qw(size total_size);
 use cf;
 use bs;
+use dbo;
 #my $COUNT=10000;
 #my $bfilter = Bloom::Filter->new( error_rate => 0.0001, capacity => $COUNT );
 #my $bfilter2 = Bloom::Filter->new( error_rate => 0.0001, capacity => $COUNT );
 #my $hashcheck=();
 my $cf;
+my $dbo=dbo->new();
+
 sub new{
         my ($class, %args) = @_;
         my $self  = bless {}, $class;
         $self->{base}=$args{'base'}; 
-        $self->{debug}=$args{'debug'}|| 1;
+        $self->{debug}=$args{'debug'}|| 0;
         $self->{config}=$args{'config'};
         $self->{refresh}=$args{'refresh'}|| 0;
         print "cm init....\n";
@@ -108,6 +111,7 @@ sub digmapping{
 	#loop url regx
 		print "$mp->{$regx}->{'index'}:$regxindex:$regx:$url>>$file \n";
 		if(($url=~/$regx/ &&(!$regxindex)) || ($regxindex && $regxindex eq $mp->{$regx}->{'index'} ) ) {
+			$regxindex= $mp->{$regx}->{'index'};
 			print "match ======================== \n";
 			my $pagetype=$mp->{$regx}->{pagetype};
 			print "match $pagetype\n" if($self->{debug}); 
@@ -131,6 +135,8 @@ sub digmapping{
 					#get 2 level xpath list
 					my $xpathlist=$xpaths->{$xpath};
 					my %datahash=();
+					$datahash{'fromurlmd5'}=md5_hex($url);
+					$datahash{'fromurl'}=$url;
 					############seconde XPath json iterator##get same level content##################
 					foreach $data(@$xpathlist){
 						foreach my $xpath2(keys %$data){
@@ -172,10 +178,11 @@ sub digmapping{
 					#################################
 				}
 			}
-			
+			last;	
 		}else{
 			print "not match \n";
 		}
+		
 	}
 	#now we save data
 	#1 save same level urls
@@ -183,7 +190,7 @@ sub digmapping{
 	$self->saveURLResult(\@nurllist,'next');
 	#2 save datainfo
 	#and save next level urls 
-	$self->saveDataResult(\@datalist,$url);
+	$self->saveDataResult(\@datalist,$url,$regxindex);
 	print "we get dataset:".scalar(@datalist)."\n";
 	##### deal with need-to-be-handle url in datalist;
 #	$content->{surl}=\@surllist if(scalar @surllist>0);		
@@ -193,25 +200,30 @@ sub digmapping{
 
 
 sub saveDataResult{
-	my($self,$result,$url,@others)=@_;
+	my($self,$result,$url,$index,@others)=@_;
     return () unless(scalar(@$result)>0);
-    my $resultfile=$cf->{'resultdata'}."/".md5_hex($url).".txt".$self->{batchid};
+    my $resultfile=$cf->{'resultdata'}."/".$index.".txt".$self->{batchid};
     print $resultfile."\n";
+	my $istitle=0;
+ 	if(-e $resultfile){
+		$istitle=1;
+	}
     my $fh;
 	$fh=new FileHandle();
-    $fh->open("> $resultfile") || die "$resultfile fail\n";
-	$fh->autoflush(1);       
+
+    $fh->open(">> $resultfile") || die "$resultfile fail\n";
+#	$fh->autoflush(1);       
 	my $title=();	
-	my $istitle=0;
+
 	foreach my $piecedata(@$result){
 
 		my	$cols;
 		if(defined $title->{cols}){
 			$cols=$title->{cols};
 		}
-		my $linedata='detail::';
-		my $titleline='##title';
-		foreach my $colname(sort {$a<=>$b} keys %$piecedata){
+		my $linedata='detail';
+		my $titleline='title::';
+		foreach my $colname(sort {$a cmp $b} keys %$piecedata){
 			if(defined $title->{cols}){
 				unless(defined	$cols->{$colname}){
 					die "defined unuint col $colname\n";
@@ -227,7 +239,6 @@ sub saveDataResult{
 			$istitle=1;
 		}
 		$title->{cols}=$cols;
-#		print $linedata."\n";
 		
 		print $fh $linedata."\n";
 	}
@@ -235,6 +246,42 @@ sub saveDataResult{
 	return 1;
 }
 
+sub DBDataResult{
+	my($self,$resultfile,$tablename,@others)=@_;
+ 	unless(-e $resultfile){
+		print "$resultfile is not exist\n";
+	}
+    my $fh;
+	$fh=new FileHandle();
+    $fh->open("$resultfile") || die "$resultfile fail\n";
+    my @send=();
+    my @titlelist=();
+    my @prepare=();
+    my $sql='';
+	while(my $l=<$fh>){
+		chomp($l);
+		if($l=~/^title::/){
+			$dbo->createtable($tablename,$l);
+			@titlelist=split /\t/,$l;
+			foreach(@titlelist){ 
+				push @prepare,'?';
+			}
+			$sql="insert into $tablename(`".join("`,`",@titlelist)."`) values(".join(",",@prepare).")";
+			print $sql."\n";
+			next;
+		}
+		push @send, $l;
+		if(scalar(@send)>50){
+			$dbo->insert($sql,\@send);
+			@send=();
+		}
+	}
+	close $fh;
+	if(scalar(@send)>0){
+			$dbo->insert($sql,\@send);
+	}
+	return 1;
+}
 sub saveURLResult{
 	my($self,$urls,$type,$url,@others)=@_;
 	return unless(scalar(@$urls)>0);
